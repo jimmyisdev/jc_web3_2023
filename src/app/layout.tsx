@@ -8,8 +8,8 @@ import { StateContextProvider } from '@/contexts'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'JC VERSE',
-  description: 'Blockchain-as-a-service 2023',
+  title: 'JVERSE 2023',
+  description: 'Blockchain-as-a-service',
 }
 
 export default function RootLayout({

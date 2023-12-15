@@ -5,19 +5,18 @@ import Box from '../shared/Box/Box';
 import { ethers } from 'ethers';
 
 import { useStateContext } from '@/contexts';
+import BoxHeader from '../shared/Box/BoxHeader';
 
 export default function BasicTransfer() {
     const apiKey = process.env.Alchemy_API_KEY;
     const network = "sepolia";
     const provider = new ethers.AlchemyProvider(network, apiKey);
-    const { currentConnectedAddress, currentNetwork, setCurrentNetwork } = useStateContext();
+    const { currentConnectedAddress, setCurrentNetwork } = useStateContext();
     const [transferVal, setTransferVal] = useState("")
-    const [sender, setSender] = useState(String(currentConnectedAddress));
-    const [receiver, setReceiver] = useState('');
+    const [sender, setSender] = useState<string>('');
+    const [receiver, setReceiver] = useState<string>('');
 
     async function handleSendMoney() {
-        const send1Balance = await provider.getBalance(sender);
-        const receive2Balance = await provider.getBalance(receiver);
         // const wallet = new ethers.Wallet(user1PrivateKey, provider);
         // const tx = await wallet.sendTransaction({
         //     to: receiver,
@@ -25,10 +24,14 @@ export default function BasicTransfer() {
         // })
         // await tx.wait();
     }
+    useEffect(() => {
+        !!currentConnectedAddress?.length && setSender(currentConnectedAddress)
+    }, [currentConnectedAddress])
+
     return (
         <Box>
             <div className='flex flex-col min-h-full justify-between align-center'>
-                <h1 className='font-bold'>Transfer - {currentNetwork}</h1>
+                <BoxHeader headerText={`Transfer`} />
                 <div className='flex flex-col'>
                     <span>FROM</span>
                     <input value={sender} onChange={e => setSender(e.target.value)} />
@@ -39,7 +42,10 @@ export default function BasicTransfer() {
                 </div>
                 <div className='flex flex-col'>
                     <span>VALUE</span>
-                    <input value={transferVal} type='number' onChange={e => setTransferVal(e.target.value)} />
+                    <input className='border-transparent focus:border-transparent focus:ring-0' value={transferVal} onChange={e => setTransferVal(e.target.value)} />
+                </div>
+                <div className='flex flex-col'>
+                    <button>Confirm</button>
                 </div>
 
             </div>
