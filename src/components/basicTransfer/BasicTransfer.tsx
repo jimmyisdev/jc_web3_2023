@@ -41,18 +41,18 @@ export default function BasicTransfer() {
                         <span >FROM</span>
                         <input
                             value={sender}
-                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-300'
                             onChange={e => setSender(e.target.value)} />
                     </div>
                     <div className='flex flex-col'>
                         <span>TO</span>
-                        <input value={receiver} className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                        <input value={receiver} className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-300'
                             onChange={e => setReceiver(e.target.value)} />
                     </div>
                     <div className='flex flex-col'>
                         <span>VALUE</span>
                         <input
-                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-300'
                             type='number'
 
                             value={transferVal}
