@@ -6,7 +6,6 @@ import NoWallet from "@/components/shared/NoWallet/NoWallet";
 import { useStateContext } from '@/contexts';
 import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
-import Box from "@/components/shared/Box/Box";
 import Image from "next/image";
 import { relevantsLogo } from "@/constants/relevantsLogo";
 
@@ -29,8 +28,6 @@ export default function Home() {
             </div>
           )
         })}
-
-
       </div>
     </main>
   )

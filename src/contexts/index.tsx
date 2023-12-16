@@ -16,6 +16,7 @@ interface stateContextValue {
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
 const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
+    // const wallet = new ethers.Wallet(user1PrivateKey, provider);
     const [currentNetwork, setCurrentNetwork] = useState<string | null>(null);
     const [currentConnectedAddress, setCurrentConnectedAddress] = useState<string | null>(null);
     const [currentCoin, setCurrentCoin] = useState<string>('ETH');
@@ -36,8 +37,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             setConnectErrorMsg("Need to install MetaMask before using our service")
         }
     }
-
-
     return (
         <StateContext.Provider
             value={{

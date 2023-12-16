@@ -5,7 +5,7 @@ export default function Footer() {
                 JVERSE 2023
             </span>
             <span className='pb-2'>
-                Disclaim: This website does not take any responsibitily for your manipulation.
+                Disclaimer : This website does not take any responsibitily for your manipulation.
             </span>
         </div>
     )

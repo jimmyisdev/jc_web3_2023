@@ -16,7 +16,8 @@ export default function BasicTransfer() {
     const [sender, setSender] = useState<string>('');
     const [receiver, setReceiver] = useState<string>('');
 
-    async function handleSendMoney() {
+    async function handleTransferBtn() {
+        console.log()
         // const wallet = new ethers.Wallet(user1PrivateKey, provider);
         // const tx = await wallet.sendTransaction({
         //     to: receiver,
@@ -42,10 +43,18 @@ export default function BasicTransfer() {
                 </div>
                 <div className='flex flex-col'>
                     <span>VALUE</span>
-                    <input className='border-transparent focus:border-transparent focus:ring-0' value={transferVal} onChange={e => setTransferVal(e.target.value)} />
+                    <input
+                        className='border-transparent focus:border-transparent focus:ring-0'
+                        value={transferVal}
+                        onChange={e => setTransferVal(e.target.value)}
+                    />
                 </div>
                 <div className='flex flex-col'>
-                    <button>Confirm</button>
+                    <button
+                        onClick={handleTransferBtn}
+                    >
+                        Confirm
+                    </button>
                 </div>
 
             </div>

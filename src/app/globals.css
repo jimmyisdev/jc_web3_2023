@@ -18,5 +18,5 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-image: linear-gradient(to right bottom, #1138a9, #254bb2, #385db9, #4b6ebf, #5f80c4, #5e91d0, #61a1d9, #68b1e2, #56c4ee, #48d7f5, #4aeaf6, #5ffbf1);
+  background-image: linear-gradient(to right bottom, #050e27, #192542, #2f3d5f, #45567d, #5c719d, #6186b5, #659bcc, #68b1e2, #56c4ee, #48d7f5, #4aeaf6, #5ffbf1);
 }

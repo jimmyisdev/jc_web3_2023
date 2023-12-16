@@ -4,6 +4,7 @@ import './globals.css'
 import Footer from '@/components/footer/Footer'
 import Header from '@/components/header/Header'
 import { StateContextProvider } from '@/contexts'
+import { SocketsContextProvider } from '@/contexts/sockets'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,11 +26,14 @@ export default function RootLayout({
         <link href="/dist/output.css" rel="stylesheet" />
       </head>
       <body className={inter.className}>
-        <StateContextProvider>
-          <Header />
-          {children}
-          <Footer />
-        </StateContextProvider>
+
+        <SocketsContextProvider>
+          <StateContextProvider>
+            <Header />
+            {children}
+            <Footer />
+          </StateContextProvider>
+        </SocketsContextProvider >
       </body>
     </html>
   )

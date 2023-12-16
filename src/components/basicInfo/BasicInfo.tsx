@@ -7,6 +7,7 @@ import { ERC20_LINKTOKEN } from '@/constants/contractAddress';
 import { erc20ABI } from '@/constants/contractABI';
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
+import { SocketsContextProvider } from '@/contexts/sockets';
 
 export default function BasicInfo() {
     const apiKey = process.env.Alchemy_API_KEY;
@@ -33,6 +34,8 @@ export default function BasicInfo() {
     }, [currentConnectedAddress?.length])
     return (
         <Box>
+
+
             <div >
                 <BoxHeader headerText={`Info`} />
                 <ul>

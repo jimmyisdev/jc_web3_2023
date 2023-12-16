@@ -1,27 +1,39 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '../shared/Box/Box'
-import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
+import { useSocketsContext } from '@/contexts/sockets';
 
 export default function CurrentPrice() {
-    const { currentCoin, setCurrentCoin } = useStateContext();
+    const { connectSocket, processSocketData, ethSingleTransaction, setEthSingleTransaction, btcSingleTransaction, setBtcSingleTransaction } = useSocketsContext();
+    const [currentEthPrice, setCurrentEthPrice] = useState()
+    const [currentBtcPrice, setCurrentBtcPrice] = useState()
+    useEffect(() => {
+        try {
+            let btcusdcSocket = connectSocket("btcusdc")
+            let ethusdcSocket = connectSocket("ethusdc")
+            btcusdcSocket.on("message", (event: any) => {
+                let data = JSON.parse(event.data);
+                processSocketData(data, setBtcSingleTransaction)
+
+            })
+            ethusdcSocket.on("message", (event: any) => {
+                let data = JSON.parse(event.data);
+                processSocketData(data, setEthSingleTransaction)
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }, []);
+
     return (
         <Box>
             <div className='flex flex-col min-h-full justify-between align-center'>
                 <BoxHeader headerText="Current Price - Mainnet" />
-                <select name="coin"
-                    defaultValue={"ETH"}
-                    value={currentCoin}
-                    onChange={e => setCurrentCoin(e.target.value)}>
-                    <option value="ETH">ETH</option>
-                    <option value="BTC">BTC</option>
-                </select>
-                <ul className='w-full flex flex-col  justify-between'>
-                    <li>USDT - {currentCoin} </li>
-                    <li>USDC - {currentCoin} </li>
-                    <li>BUSD - {currentCoin} </li>
-                    <li>DAI -  {currentCoin}</li>
+                <h1>Trading Record</h1>
+                <ul className='w-full flex flex-col'>
+                    <li>USDC / ETH {ethSingleTransaction?.currentPrice} </li>
+                    <li>USDC / BTC {btcSingleTransaction?.currentPrice} </li>
                 </ul>
                 <span className='text-center font-bold text-yellow-300'>Powered by Binance API</span>
             </div>
