@@ -1,7 +1,6 @@
 'use client'
-
-import { CoinTransaction } from "@/interfaces/scokets_interface"
 import { useState } from "react"
+import { CoinTransaction } from "@/interfaces/scokets_interface"
 
 export default function TradeDisplay({ data }: { data: CoinTransaction | null }) {
     const [showMore, setShowMore] = useState(false)

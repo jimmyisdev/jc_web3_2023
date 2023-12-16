@@ -17,44 +17,53 @@ export default function BasicTransfer() {
     const [receiver, setReceiver] = useState<string>('');
 
     async function handleTransferBtn() {
-        console.log()
-        // const wallet = new ethers.Wallet(user1PrivateKey, provider);
-        // const tx = await wallet.sendTransaction({
-        //     to: receiver,
-        //     value: ethers.parseEther(String(transferVal))
-        // })
-        // await tx.wait();
+        if (sender.length && receiver.length && transferVal.length) {
+            // const wallet = new ethers.Wallet(user1PrivateKey, provider);
+            // const tx = await wallet.sendTransaction({
+            //     to: receiver,
+            //     value: ethers.parseEther(String(transferVal))
+            // })
+            // await tx.wait();
+        } else {
+            return
+        }
     }
     useEffect(() => {
-        !!currentConnectedAddress?.length && setSender(currentConnectedAddress)
+        currentConnectedAddress?.length && setSender(currentConnectedAddress)
     }, [currentConnectedAddress])
 
     return (
         <Box>
-            <div className='flex flex-col min-h-full justify-between align-center'>
+            <div className='flex flex-col min-h-full align-center'>
                 <BoxHeader headerText={`Transfer`} />
-                <div className='flex flex-col'>
-                    <span>FROM</span>
-                    <input value={sender} onChange={e => setSender(e.target.value)} />
-                </div>
-                <div className='flex flex-col'>
-                    <span>TO</span>
-                    <input value={receiver} onChange={e => setReceiver(e.target.value)} />
-                </div>
-                <div className='flex flex-col'>
-                    <span>VALUE</span>
-                    <input
-                        className='border-transparent focus:border-transparent focus:ring-0'
-                        value={transferVal}
-                        onChange={e => setTransferVal(e.target.value)}
-                    />
-                </div>
-                <div className='flex flex-col'>
-                    <button
-                        onClick={handleTransferBtn}
-                    >
-                        Confirm
-                    </button>
+                <div className='h-48 overflow-scroll '>
+                    <div className='flex flex-col mb-1'>
+                        <span >FROM</span>
+                        <input
+                            value={sender}
+                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                            onChange={e => setSender(e.target.value)} />
+                    </div>
+                    <div className='flex flex-col'>
+                        <span>TO</span>
+                        <input value={receiver} className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                            onChange={e => setReceiver(e.target.value)} />
+                    </div>
+                    <div className='flex flex-col'>
+                        <span>VALUE</span>
+                        <input
+                            className='p-1 bg-transparent border-b-2 border-white-100 focus:border-b-2 focus:border-blue-100'
+                            type='number'
+
+                            value={transferVal}
+                            onChange={e => setTransferVal(e.target.value)}
+                        />
+                    </div>
+                    <div className='flex flex-col'>
+                        <button
+                            onClick={handleTransferBtn}
+                        >Confirm</button>
+                    </div>
                 </div>
 
             </div>

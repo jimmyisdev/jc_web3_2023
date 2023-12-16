@@ -7,14 +7,12 @@ import TradeDisplay from './TradeDisplay';
 
 export default function CurrentPrice() {
     const { connectSocket, processSocketData, ethSingleTransaction, setEthSingleTransaction, btcSingleTransaction, setBtcSingleTransaction } = useSocketsContext();
-    const [socketError, setSocketError] = useState<string | null>('')
     const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
         setIsLoading(true)
         try {
             let btcusdcSocket = connectSocket("btcusdc")
             let ethusdcSocket = connectSocket("ethusdc")
-
             btcusdcSocket.on("message", (event: any) => {
                 setIsLoading(false)
                 let data = JSON.parse(event.data);

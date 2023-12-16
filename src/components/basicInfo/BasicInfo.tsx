@@ -7,11 +7,10 @@ import { ERC20_LINKTOKEN } from '@/constants/contractAddress';
 import { erc20ABI } from '@/constants/contractABI';
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
-import { SocketsContextProvider } from '@/contexts/sockets';
 
 export default function BasicInfo() {
     const apiKey = process.env.Alchemy_API_KEY;
-    const { currentConnectedAddress, setCurrentNetwork } = useStateContext();
+    const { currentConnectedAddress, setCurrentNetwork, setConnectErrorMsg } = useStateContext();
     const [userBalance, setUserBalance] = useState<string | null>(null);
     const provider = new ethers.AlchemyProvider('sepolia', apiKey);
     // const provider = new ethers.JsonRpcProvider('sepolia', apiKey);
@@ -25,6 +24,7 @@ export default function BasicInfo() {
                 const formatedBalance = ethers.formatEther(balance);
                 setUserBalance(formatedBalance)
             }).catch((error) => {
+                // setConnectErrorMsg("Error occured from the Alchemy Provider")
                 console.log(error)
             });
         }
