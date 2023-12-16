@@ -3,21 +3,26 @@ import React, { useEffect, useState } from 'react'
 import Box from '../shared/Box/Box'
 import BoxHeader from '../shared/Box/BoxHeader';
 import { useSocketsContext } from '@/contexts/sockets';
+import TradeDisplay from './TradeDisplay';
 
 export default function CurrentPrice() {
     const { connectSocket, processSocketData, ethSingleTransaction, setEthSingleTransaction, btcSingleTransaction, setBtcSingleTransaction } = useSocketsContext();
-    const [currentEthPrice, setCurrentEthPrice] = useState()
-    const [currentBtcPrice, setCurrentBtcPrice] = useState()
+    const [socketError, setSocketError] = useState<string | null>('')
+    const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
+        setIsLoading(true)
         try {
             let btcusdcSocket = connectSocket("btcusdc")
             let ethusdcSocket = connectSocket("ethusdc")
+
             btcusdcSocket.on("message", (event: any) => {
+                setIsLoading(false)
                 let data = JSON.parse(event.data);
                 processSocketData(data, setBtcSingleTransaction)
 
             })
             ethusdcSocket.on("message", (event: any) => {
+                setIsLoading(false)
                 let data = JSON.parse(event.data);
                 processSocketData(data, setEthSingleTransaction)
             })
@@ -25,17 +30,18 @@ export default function CurrentPrice() {
             console.log(error)
         }
     }, []);
-
     return (
         <Box>
-            <div className='flex flex-col min-h-full justify-between align-center'>
-                <BoxHeader headerText="Current Price - Mainnet" />
-                <h1>Trading Record</h1>
-                <ul className='w-full flex flex-col'>
-                    <li>USDC / ETH {ethSingleTransaction?.currentPrice} </li>
-                    <li>USDC / BTC {btcSingleTransaction?.currentPrice} </li>
-                </ul>
-                <span className='text-center font-bold text-yellow-300'>Powered by Binance API</span>
+            <div className='relative flex flex-col min-h-full  align-center '>
+                <BoxHeader headerText="Trading Record - Mainnet" />
+                {isLoading ?
+                    <h1>Loading...</h1> :
+                    <div className='h-36 overflow-scroll'>
+                        <TradeDisplay data={ethSingleTransaction} />
+                        <TradeDisplay data={btcSingleTransaction} />
+                    </div>
+                }
+                <span className='absolute bottom-1 w-full text-center font-bold text-yellow-300'>Powered by Binance API</span>
             </div>
         </Box>
     )
