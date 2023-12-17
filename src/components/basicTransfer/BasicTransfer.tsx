@@ -6,9 +6,10 @@ import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
 
 export default function BasicTransfer() {
-    const { transferVal = '', setTransferVal, sender, setSender, receiver, setReceiver, currentConnectedAccounts, transferCoin } = useStateContext();
-    function handleTransferBtn() {
-        transferCoin()
+    const { userBalance, transferVal, setTransferVal, sender, setSender, receiver, setReceiver, currentConnectedAccounts, transferCoin } = useStateContext();
+    async function handleTransferBtn() {
+        if (transferVal > Number(userBalance) || transferVal <= 0) return
+        await transferCoin()
     }
     useEffect(() => {
         currentConnectedAccounts?.length && setSender(currentConnectedAccounts[0])
