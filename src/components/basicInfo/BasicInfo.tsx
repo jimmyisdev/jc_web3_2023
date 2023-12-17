@@ -7,6 +7,7 @@ import { ERC20_LINKTOKEN } from '@/constants/contractAddress';
 import { erc20ABI } from '@/constants/contractABI';
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
+import { SiChainlink, SiEthereum } from "react-icons/si";
 
 export default function BasicInfo() {
     const apiKey = process.env.Alchemy_API_KEY;
@@ -41,13 +42,14 @@ export default function BasicInfo() {
                 <div>
 
                     <div className='p-1 border-b-2 border-blue-300'>
-                        <span>Address : {!!currentConnectedAddress && `${currentConnectedAddress.slice(0, 15)}......`}</span>
+                        <span>Address : </span>
+                        <span>{!!currentConnectedAddress && `${currentConnectedAddress.slice(0, 15)}......`}</span>
                     </div>
                     <div className='p-1 border-b-2 border-blue-300'>
-                        <span>ETHER : </span>
+                        <span className='flex flex-row items-center'><SiEthereum /><span className='ml-2'>ETHER : </span></span>
                     </div>
                     <div className='p-1 border-b-2 border-blue-300'>
-                        <span>LINK : </span>
+                        <span className='flex flex-row items-center'><SiChainlink /><span className='ml-2'>LINK :  </span></span>
                     </div>
                 </div>
 
