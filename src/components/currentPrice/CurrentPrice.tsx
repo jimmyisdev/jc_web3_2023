@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import { SiBinance } from "react-icons/si";
 import Box from '../shared/Box/Box'
 import BoxHeader from '../shared/Box/BoxHeader';
 import { useSocketsContext } from '@/contexts/sockets';
@@ -28,11 +29,14 @@ export default function CurrentPrice() {
         <Box>
             <div className='relative flex flex-col min-h-full  align-center '>
                 <BoxHeader headerText="Trading Record - Mainnet" />
-                <div className='h-36 overflow-scroll'>
+                <div className='h-44 overflow-scroll'>
                     <TradeDisplay data={ethSingleTransaction} />
                     <TradeDisplay data={btcSingleTransaction} />
                 </div>
-                <span className='absolute bottom-1 w-full text-center font-bold text-yellow-300'>Powered by Binance API</span>
+                <div className='absolute bottom-1 flex flex-row items-center justify-center w-full text-center font-bold text-yellow-300'>
+                    <span className='mr-3'>Powered by Binance API</span>
+                    <SiBinance />
+                </div>
             </div>
         </Box>
     )

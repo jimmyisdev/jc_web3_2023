@@ -13,7 +13,6 @@ export default function SettingPanel() {
                 <div className='mb-3'>
                     <h1>Select Network</h1>
                     <select name="pets" id="pet-select" onChange={(e) => setCurrentNetwork(e.target.value)}>
-                        <option value="sepolia">Choose Network</option>
                         {NETWORKS.map(item => {
                             return (
                                 <option key={item.name} value={item.network}>{item.name}</option>

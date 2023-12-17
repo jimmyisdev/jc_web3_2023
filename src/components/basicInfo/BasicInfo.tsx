@@ -38,11 +38,19 @@ export default function BasicInfo() {
 
             <div >
                 <BoxHeader headerText={`Info`} />
-                <ul>
-                    <li>Address : {!!currentConnectedAddress && `${currentConnectedAddress.slice(0, 15)}......`}</li>
-                    <li>ETHER : {!!currentConnectedAddress && userBalance} </li>
-                    <li>LINK : { }</li>
-                </ul>
+                <div>
+
+                    <div className='p-1 border-b-2 border-blue-300'>
+                        <span>Address : {!!currentConnectedAddress && `${currentConnectedAddress.slice(0, 15)}......`}</span>
+                    </div>
+                    <div className='p-1 border-b-2 border-blue-300'>
+                        <span>ETHER : </span>
+                    </div>
+                    <div className='p-1 border-b-2 border-blue-300'>
+                        <span>LINK : </span>
+                    </div>
+                </div>
+
             </div>
         </Box>
 
