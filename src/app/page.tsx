@@ -8,7 +8,6 @@ import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
 import Image from "next/image";
 import { relevantsLogo } from "@/constants/relevantsLogo";
-import { useEffect } from "react";
 
 export default function Home() {
   const { connectErrorMsg } = useStateContext();
