@@ -7,22 +7,23 @@ import { erc20ABI } from '@/constants/contractABI';
 const apiKey = process.env.Alchemy_API_KEY;
 
 interface stateContextValue {
-    currentCoin: string;
     currentNetwork: string;
-    currentConnectedAccounts: string[];
-    connectErrorMsg: string | null;
-    sender: string | undefined;
-    receiver: string | undefined;
-    userBalance: string | undefined;
-    transferVal: number;
     setCurrentNetwork: React.Dispatch<React.SetStateAction<string>>,
-    setCurrentCoin: React.Dispatch<React.SetStateAction<string>>,
+    currentConnectedAccounts: string[];
     setCurrentConnectedAccounts: React.Dispatch<React.SetStateAction<string[]>>,
+    connectErrorMsg: string | null;
     setConnectErrorMsg: React.Dispatch<React.SetStateAction<string | null>>,
+    sender: string | undefined;
     setSender: React.Dispatch<React.SetStateAction<string | undefined>>,
+    receiver: string | undefined;
     setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>,
+    transferVal: number;
     setTransferVal: React.Dispatch<React.SetStateAction<number>>,
+    userBalance: string | undefined;
     setUserBalance: React.Dispatch<React.SetStateAction<string | undefined>>,
+    userLinkToken: string | undefined;
+    setUserLinkTOken: React.Dispatch<React.SetStateAction<string | undefined>>,
+
     connectWalletHandler: () => {},
     transferCoin: () => {},
     getUserBalance: () => {},
@@ -31,15 +32,14 @@ interface stateContextValue {
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
 const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
-    // const wallet = new ethers.Wallet(user1PrivateKey, provider);
     const [currentNetwork, setCurrentNetwork] = useState<string>("sepolia");
     const [currentConnectedAccounts, setCurrentConnectedAccounts] = useState<string[]>([]);
-    const [currentCoin, setCurrentCoin] = useState<string>('ETH');
     const [connectErrorMsg, setConnectErrorMsg] = useState<string | null>(null);
     const [transferVal, setTransferVal] = useState<number>(0)
     const [sender, setSender] = useState<string | undefined>('');
     const [receiver, setReceiver] = useState<string | undefined>('');
-    const [userBalance, setUserBalance] = useState<string | undefined>('');
+    const [userBalance, setUserBalance] = useState<string | undefined>('0');
+    const [userLinkToken, setUserLinkTOken] = useState<string | undefined>('0');
 
     async function connectWalletHandler() {
         if (window.ethereum) {
@@ -68,36 +68,39 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         await tx.wait();
     }
     async function getUserBalance() {
-        // const provider = new ethers.AlchemyProvider(currentNetwork, apiKey);
         const provider = new ethers.EtherscanProvider(currentNetwork);
         if (currentConnectedAccounts?.length && sender) {
-            await provider.getBalance(sender).then((result) => {
-                let balance = result;
-                const formatedBalance = ethers.formatEther(balance);
-                setUserBalance(formatedBalance)
-            }).catch((error) => {
-                setConnectErrorMsg("Error occured from the  Provider")
-                console.log(error)
-            });
+            await provider.getBalance(sender)
+                .then((result) => {
+                    let balance = result;
+                    const formatedBalance = ethers.formatEther(balance);
+                    setUserBalance(formatedBalance)
+                }).catch((error) => {
+                    setConnectErrorMsg("Error occured from the  Provider")
+                    console.log(error)
+                });
         }
     }
-
     async function getErc20TokenBalance() {
-        const provider = new ethers.AlchemyProvider(currentNetwork, apiKey);
-        // const provider = new ethers.EtherscanProvider(currentNetwork);
+        const provider = new ethers.AlchemyProvider(currentNetwork, process.env.Alchemy_API_KEY);
         const TokenAddress = ERC20_LINKTOKEN[currentNetwork];
         const contractErc20 = new ethers.Contract(TokenAddress, erc20ABI, provider);
-        await contractErc20.balanceOf(sender).then((result) => console.log(result)).catch((error) => console.log(error))
-        // console.log(balance)
-        console.log(contractErc20)
-        // const balance = await ContractErc20.balanceOf((await provider.getSigner())[0].address);
+        if (currentConnectedAccounts?.length && sender) {
+            await contractErc20.balanceOf(sender)
+                .then((result) => {
+                    let balance = result;
+                    const formatedBalance = ethers.formatEther(balance);
+                    setUserLinkTOken(formatedBalance)
+                }).catch((error) => {
+                    console.log(error)
+                    setConnectErrorMsg("Error occured from the  Provider")
+                });
+        }
     }
 
     return (
         <StateContext.Provider
             value={{
-                currentCoin,
-                setCurrentCoin,
                 currentNetwork,
                 setCurrentNetwork,
                 currentConnectedAccounts,
@@ -109,9 +112,11 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 receiver,
                 setReceiver,
                 transferVal,
+                setTransferVal,
                 userBalance,
                 setUserBalance,
-                setTransferVal,
+                userLinkToken,
+                setUserLinkTOken,
                 connectWalletHandler,
                 transferCoin,
                 getUserBalance,

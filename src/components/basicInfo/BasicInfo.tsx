@@ -8,7 +8,7 @@ import BoxHeader from '../shared/Box/BoxHeader';
 import { SiChainlink, SiEthereum } from "react-icons/si";
 
 export default function BasicInfo() {
-    const { currentNetwork, sender, currentConnectedAccounts, getErc20TokenBalance, getUserBalance, userBalance } = useStateContext();
+    const { currentNetwork, sender, currentConnectedAccounts, getErc20TokenBalance, getUserBalance, userBalance, userLinkToken } = useStateContext();
     useEffect(() => {
         getErc20TokenBalance()
         sender && getUserBalance();
@@ -18,22 +18,26 @@ export default function BasicInfo() {
             <div >
                 <BoxHeader headerText={`Info`} />
                 {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
-
                     <div className='h-52 overflow-scroll '>
                         <div className='p-1 mb-2 border-b-2 border-blue-300'>
-                            <span>Address : </span>
-                            <span>{`${sender.slice(0, 15)}......`}</span>
+                            <h1 className='mb-1 font-bold'>Current Address </h1>
+                            <span>{`${sender.slice(0, 25)}......`}</span>
                         </div>
                         <div className='p-1 mb-2 border-b-2 border-blue-300'>
+                            <h1 className='mb-1 font-bold'>Coin</h1>
                             <span className='flex flex-row items-center'><SiEthereum /><span className='ml-2'>ETHER : {userBalance}</span></span>
                         </div>
                         <div className='p-1 mb-2 border-b-2 border-blue-300'>
-                            <span className='flex flex-row items-center'><SiChainlink /><span className='ml-2'>LINK :  </span></span>
+                            <h1 className='mb-1 font-bold'>Token - ERC20</h1>
+                            <span className='flex flex-row items-center'><SiChainlink /><span className='ml-2'>LINK : {userLinkToken}</span></span>
+                        </div>
+                        <div className='p-1 mb-2 border-b-2 border-blue-300'>
+                            <h1 className='mb-1 font-bold'>NFT - ERC721 </h1>
                         </div>
                     </div>
                 }
-            </div>
-        </Box>
+            </div >
+        </Box >
 
     )
 }
