@@ -17,7 +17,8 @@ export default function BasicInfo() {
         <Box>
             <div >
                 <BoxHeader headerText={`Info`} />
-                {!!currentConnectedAccounts.length && !!sender &&
+                {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
+
                     <div className='h-52 overflow-scroll '>
                         <div className='p-1 mb-2 border-b-2 border-blue-300'>
                             <span>Address : </span>

@@ -59,17 +59,13 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function transferCoin() {
         const provider = new ethers.AlchemyProvider(currentNetwork, apiKey);
-        if (sender?.length && receiver?.length && !!transferVal) {
-            let user1PrivateKey = ''
-            const wallet = new ethers.Wallet(user1PrivateKey, provider);
-            const tx = await wallet.sendTransaction({
-                to: receiver,
-                value: ethers.parseEther(String(transferVal))
-            })
-            await tx.wait();
-        } else {
-            return
-        }
+        let user1PrivateKey = ''
+        const wallet = new ethers.Wallet(user1PrivateKey, provider);
+        const tx = await wallet.sendTransaction({
+            to: receiver,
+            value: ethers.parseEther(String(transferVal))
+        })
+        await tx.wait();
     }
     async function getUserBalance() {
         // const provider = new ethers.AlchemyProvider(currentNetwork, apiKey);
