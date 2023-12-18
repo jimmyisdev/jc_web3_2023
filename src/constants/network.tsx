@@ -1,16 +1,15 @@
 export const NETWORKS = [
     {
-        network: "homestead",
-        name: "Mainnet"
+        CURRENT_NETWORK: "homestead",
+        ALCHEMY_NETWORKS: 'ETH_MAINNET'
 
     },
     {
-        network: "goerli",
-        name: "Görli"
-
+        CURRENT_NETWORK: "goerli",
+        ALCHEMY_NETWORKS: "ETH_GOERLI"
     },
     {
-        network: "sepolia",
-        name: "Sepolia"
+        CURRENT_NETWORK: "sepolia",
+        ALCHEMY_NETWORKS: 'ETH_SEPOLIA'
     },
 ]
