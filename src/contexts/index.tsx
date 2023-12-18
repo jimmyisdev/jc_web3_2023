@@ -30,8 +30,6 @@ interface stateContextValue {
     setTransferVal: React.Dispatch<React.SetStateAction<number>>,
     userBalance: string | undefined;
     setUserBalance: React.Dispatch<React.SetStateAction<string | undefined>>,
-    userLinkToken: string | undefined;
-    setUserLinkTOken: React.Dispatch<React.SetStateAction<string | undefined>>,
     userTokens: ERC20TOKEN[],
     setUserTokens: React.Dispatch<React.SetStateAction<ERC20TOKEN[]>>,
 
@@ -50,7 +48,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [sender, setSender] = useState<string | undefined>('');
     const [receiver, setReceiver] = useState<string | undefined>('');
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
-    const [userLinkToken, setUserLinkTOken] = useState<string | undefined>('0');
     const [userTokens, setUserTokens] = useState<ERC20TOKEN[]>([]);
     const ALCHEMY_SETTING = {
         apiKey: process.env.NEXT_PUBLIC_Alchemy_API_KEY,
@@ -107,24 +104,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         }).then((result) => { console.log(result, 108) }).catch((error) => console.log(error))
     }
     async function getErc20TokenBalance() {
-        // const provider = new ethers.AlchemyProvider(currentNetwork, process.env.Alchemy_API_KEY);
-        // const TokenAddress = ERC20_LINKTOKEN[currentNetwork];
-        // const contractErc20 = new ethers.Contract(TokenAddress, erc20ABI, provider);
-        // if (currentConnectedAccounts?.length && sender) {
-        //     await contractErc20.balanceOf(sender)
-        //         .then((result) => {
-        //             let balance = result;
-        //             const formatedBalance = ethers.formatEther(balance);
-        //             setUserLinkTOken(formatedBalance)
-        //         }).catch((error) => {
-        //             console.log(error)
-        //             // setConnectErrorMsg("Error occured from the  Provider")
-        //         });
-        // }
-        const currentNetwork = "ETH_SEPOLIA"
-        const TokenAddress = ERC20_LINKTOKEN[currentNetwork];
-
-
         const alchemy = new Alchemy(ALCHEMY_SETTING);
         if (sender) {
             await alchemy.core.getTokenBalances(sender)
@@ -160,19 +139,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
 
         }
     }
-    async function getTokenData(tokenAddress: string) {
-        const alchemy = new Alchemy(ALCHEMY_SETTING);
-        await alchemy.core.getTokenMetadata(tokenAddress)
-            .then(result => result)
-            .catch(error => {
-                console.log(error)
-                return error
-            }
-            )
-    }
-
-
-
 
     return (
         <StateContext.Provider
@@ -191,11 +157,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setTransferVal,
                 userBalance,
                 setUserBalance,
-                userLinkToken,
-                setUserLinkTOken,
                 userTokens,
                 setUserTokens,
-
 
                 connectWalletHandler,
                 transferCoin,
