@@ -20,10 +20,10 @@ export default function Home() {
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicTransfer />}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseAsset />}
       </div>
-      <div className="w-screen flex flex-row flex-wrap justify-around p-3">
+      <div className="w-screen flex flex-row flex-wrap justify-around">
         {relevantsLogo.map(item => {
           return (
-            <div key={item} className="flex flex-col items-center justify-center my-3">
+            <div key={item} className="flex flex-col items-center justify-center my-5">
               <Image src={`/${item}.png`} height={300} width={300} alt={item} className="z-5" />
             </div>
           )
@@ -32,3 +32,4 @@ export default function Home() {
     </main>
   )
 }
+

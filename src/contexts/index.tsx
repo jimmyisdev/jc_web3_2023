@@ -54,8 +54,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             }
         }
     }
-
-
     async function connectWalletHandler() {
         if (window.ethereum) {
             const ethereum = window.ethereum as MetaMaskInpageProvider;
