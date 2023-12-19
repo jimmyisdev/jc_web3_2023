@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import { CoinTransaction } from "@/interfaces/scokets_interface"
 import { VscTriangleDown, VscTriangleUp } from "react-icons/vsc";
+import Loading from "../shared/Loading/Loading";
 
 export default function TradeDisplay({ data }: { data: CoinTransaction | null }) {
     const [showMore, setShowMore] = useState(false);
@@ -13,7 +14,7 @@ export default function TradeDisplay({ data }: { data: CoinTransaction | null })
         <div className="mb-2">
             {
                 isLoading ?
-                    <span>Loading...</span> :
+                    <Loading /> :
                     <div className="p-1 border-b-2 border-blue-300">
                         <div className="relative w-full">
                             <h2>{`${data?.currentTradeSymbol} - ${data?.currentPrice}`} </h2>
