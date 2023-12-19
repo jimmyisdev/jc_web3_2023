@@ -8,6 +8,7 @@ import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
 import Image from "next/image";
 import { relevantsLogo } from "@/constants/relevantsLogo";
+import Marquee from "react-fast-marquee";
 
 export default function Home() {
   const { connectErrorMsg } = useStateContext();
@@ -21,13 +22,16 @@ export default function Home() {
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseAsset />}
       </div>
       <div className="w-screen flex flex-row flex-wrap justify-around">
-        {relevantsLogo.map(item => {
-          return (
-            <div key={item} className="flex flex-col items-center justify-center my-5">
-              <Image src={`/${item}.png`} height={300} width={300} alt={item} className="z-5" />
-            </div>
-          )
-        })}
+        <Marquee pauseOnHover={true}>
+          {relevantsLogo.map(item => {
+            return (
+              <div key={item} className="flex flex-col items-center justify-center m-5">
+                <Image src={`/${item}.png`} height={300} width={300} alt={item} className="z-5" />
+              </div>
+            )
+          })}
+        </Marquee>
+
       </div>
     </main>
   )
