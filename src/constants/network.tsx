@@ -1,15 +1,16 @@
+import { Network, Alchemy } from 'alchemy-sdk';
+
 export const NETWORKS = [
     {
         CURRENT_NETWORK: "homestead",
-        ALCHEMY_NETWORKS: 'ETH_MAINNET'
-
+        ALCHEMY_NETWORK: Network.ETH_MAINNET
     },
     {
         CURRENT_NETWORK: "goerli",
-        ALCHEMY_NETWORKS: "ETH_GOERLI"
+        ALCHEMY_NETWORK: Network.ETH_GOERLI
     },
     {
         CURRENT_NETWORK: "sepolia",
-        ALCHEMY_NETWORKS: 'ETH_SEPOLIA'
+        ALCHEMY_NETWORK: Network.ETH_SEPOLIA
     },
 ]

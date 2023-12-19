@@ -6,16 +6,31 @@ import BoxHeader from '../shared/Box/BoxHeader';
 import { SiChainlink, SiEthereum } from "react-icons/si";
 
 export default function BasicInfo() {
-    const { userTokens, setUserTokens, currentNetwork, sender, currentConnectedAccounts, getErc20TokenBalance, getUserBalance, userBalance } = useStateContext();
+    const { userTokens, alchemyNetwork, currentNetwork, sender, currentConnectedAccounts, getErc20TokenBalance, getUserBalance, userBalance, getAlchemyNetwork } = useStateContext();
+
     useEffect(() => {
-        setUserTokens([]);
-        sender && getUserBalance() && getErc20TokenBalance()
+        if (sender) {
+            getUserBalance()
+            getErc20TokenBalance()
+        }
     }, [sender])
+
+    useEffect(() => {
+        console.log(12, "bi")
+        sender && alchemyNetwork && getErc20TokenBalance()
+    }, [alchemyNetwork])
+
+    useEffect(() => {
+        console.log(17, "bi")
+        sender && getAlchemyNetwork()
+        getUserBalance()
+    }, [currentNetwork])
+
     return (
         <Box>
             <div >
                 {/* <button onClick={getErc20TokenBalance}>Get Balance</button> */}
-                <BoxHeader headerText={`Info`} />
+                <BoxHeader headerText={`Asset Info`} />
                 {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
                     <div className='h-52 overflow-scroll '>
                         <div className='p-1 mb-2 '>

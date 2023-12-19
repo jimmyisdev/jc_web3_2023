@@ -21,7 +21,7 @@ export default function SettingPanel() {
                             }>
                             {NETWORKS.map(item => {
                                 return (
-                                    <option key={item.ALCHEMY_NETWORKS} value={item.CURRENT_NETWORK}>{item.CURRENT_NETWORK.toUpperCase()}</option>
+                                    <option key={item.CURRENT_NETWORK} value={item.CURRENT_NETWORK}>{item.CURRENT_NETWORK.toUpperCase()}</option>
                                 )
                             })}
                         </select>

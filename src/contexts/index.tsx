@@ -1,19 +1,10 @@
 "use client"
-import { Network, Alchemy } from 'alchemy-sdk';
+import { Alchemy, Network, Wallet, Utils } from 'alchemy-sdk';
 import React, { createContext, useState } from 'react';
-import { ethers } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
-import { ERC20_LINKTOKEN } from '@/constants/contractAddress';
-import { erc20ABI } from '@/constants/contractABI';
-
-interface ERC20TOKEN {
-    decimals: number,
-    logo: string,
-    name: string,
-    symbol: string,
-    tokenBalance: number,
-    tokenAddress: string
-}
+import { NETWORKS } from '@/constants/network';
+import { ERC20TOKEN } from '@/interfaces/contracts_interface';
 
 interface stateContextValue {
     currentNetwork: string;
@@ -32,15 +23,19 @@ interface stateContextValue {
     setUserBalance: React.Dispatch<React.SetStateAction<string | undefined>>,
     userTokens: ERC20TOKEN[],
     setUserTokens: React.Dispatch<React.SetStateAction<ERC20TOKEN[]>>,
-
+    alchemyNetwork: Network,
+    setAlchemyNetwork: React.Dispatch<React.SetStateAction<Network>>,
     connectWalletHandler: () => {},
     transferCoin: () => {},
     getUserBalance: () => {},
     getErc20TokenBalance: () => {},
+    getAlchemyNetwork: () => void,
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
 const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
+    const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY || "";
+    const Alchemy_API_KEY = process.env.NEXT_PUBLIC_Alchemy_API_KEY || "";
     const [currentNetwork, setCurrentNetwork] = useState<string>("sepolia");
     const [currentConnectedAccounts, setCurrentConnectedAccounts] = useState<string[]>([]);
     const [connectErrorMsg, setConnectErrorMsg] = useState<string | null>(null);
@@ -49,10 +44,18 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [receiver, setReceiver] = useState<string | undefined>('');
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
     const [userTokens, setUserTokens] = useState<ERC20TOKEN[]>([]);
-    const ALCHEMY_SETTING = {
-        apiKey: process.env.NEXT_PUBLIC_Alchemy_API_KEY,
-        network: Network.ETH_SEPOLIA
-    };
+    const [alchemyNetwork, setAlchemyNetwork] = useState<Network>(Network.ETH_SEPOLIA);
+    function getAlchemyNetwork() {
+        for (let i = 0; i < NETWORKS.length; i++) {
+            if (NETWORKS[i].CURRENT_NETWORK === currentNetwork) {
+                console.log(NETWORKS[i].CURRENT_NETWORK, 50)
+                console.log(currentNetwork, 50)
+                return setAlchemyNetwork(NETWORKS[i].ALCHEMY_NETWORK)
+            }
+        }
+    }
+
+
     async function connectWalletHandler() {
         if (window.ethereum) {
             const ethereum = window.ethereum as MetaMaskInpageProvider;
@@ -70,6 +73,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function getUserBalance() {
         const provider = new ethers.EtherscanProvider(currentNetwork);
+        setUserBalance("0")
         if (currentConnectedAccounts?.length && sender) {
             await provider.getBalance(sender)
                 .then((result) => {
@@ -77,40 +81,26 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                     const formatedBalance = ethers.formatEther(balance);
                     setUserBalance(formatedBalance)
                 }).catch((error) => {
-                    setConnectErrorMsg("Error occured from the  Provider")
+                    setConnectErrorMsg("Error occured from the Provider")
                     console.log(error)
                 });
         }
     }
-    // async function getSingleContract(contract: string) {
-    //     const provider = new ethers.EtherscanProvider(currentNetwork);
 
-    //     await provider.getContract(contract).symbol
-    //         .then((result) => {
-    //             console.log(result)
-
-    //         }).catch((error) => {
-    //             console.log(error)
-    //         });
-    // }
-
-
-    async function transferCoin() {
-        const alchemy = new Alchemy(ALCHEMY_SETTING);
-        await alchemy.core.call({
-            to: "0x3d60179980f4288ebaAB489229EC62CB0BB2de52",
-            from: sender,
-            value: ethers.parseEther(String(0.000002))
-        }).then((result) => { console.log(result, 108) }).catch((error) => console.log(error))
-    }
     async function getErc20TokenBalance() {
-        const alchemy = new Alchemy(ALCHEMY_SETTING);
         if (sender) {
+            const ALCHEMY_SETTING = {
+                apiKey: Alchemy_API_KEY,
+                network: alchemyNetwork
+            }
+            const alchemy = new Alchemy(ALCHEMY_SETTING);
+            setUserTokens([])
             await alchemy.core.getTokenBalances(sender)
                 .then(async (result) => {
                     let allTokens = result?.tokenBalances;
+                    console.log(allTokens)
                     if (allTokens.length) {
-                        for (let i = 0; i <= allTokens.length; i++) {
+                        for (let i = 0; i < allTokens.length; i++) {
                             let tokenAddress = allTokens[i].contractAddress
                             let rawBalance = (allTokens[i].tokenBalance);
                             let tokenBalance = rawBalance ? ethers.formatEther(rawBalance) : 0;
@@ -135,9 +125,60 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                         }
                     }
                 })
-                .catch(error => console.log(error, 154))
+                .catch(error => console.log(error, ""))
 
         }
+    }
+    async function transferCoin() {
+        // let wallet = new Signer()
+        const provider = ethers.getDefaultProvider(currentNetwork, {
+            alchemy: Alchemy_API_KEY
+        })
+
+        // await provider.call({
+        //     to: receiver,
+        //     value: ethers.parseEther(String(transferVal)),
+        // })
+
+        const limit: bigint = await provider.estimateGas({
+            from: sender,
+            to: receiver,
+            value: ethers.parseEther(String(transferVal)),
+        });
+
+        // const tx = await .signer.sendTransaction({
+        //     from: "0x1F0c72E13718D9136FfE51b89289b239A1BcfE28",
+        //     to: "0x350a97Aa777CcfE518197C34342C5bA262825B35",
+        //     value: parseUnits("0.0000001", "ether"),
+        //     gasLimit: limit,
+        //     nonce: await signer.getNonce(),
+        //     maxPriorityFeePerGas: parseUnits("1", "gwei"),
+        //     chainId: 11155111,
+        // });
+
+
+
+        // const wallet = new Wallet(PRIVATE_KEY)
+        // const alchemy = new Alchemy(ALCHEMY_SETTING);
+        // const transaction = {
+        //     to: receiver,
+        //     value: ethers.parseEther(String(transferVal)),
+        //     gasLimit: "21000",
+        //     nonce: await alchemy.core.getTransactionCount(wallet.getAddress())
+        // }
+        // const rawTransaction = await wallet.signTransaction(transaction);
+        // const txhash = await alchemy.transact.sendTransaction(rawTransaction)
+
+
+        // const alchemy = new Alchemy(ALCHEMY_SETTING);
+        // await alchemy.core.call({
+        //     to: receiver,
+        //     from: sender,
+        //     value: ethers.parseEther(String(transferVal))
+        // }).then((result) => { console.log(result, 108) }).catch((error) => console.log(error))
+    }
+    async function transferToken() {
+
     }
 
     return (
@@ -159,11 +200,14 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setUserBalance,
                 userTokens,
                 setUserTokens,
+                alchemyNetwork,
+                setAlchemyNetwork,
 
                 connectWalletHandler,
                 transferCoin,
                 getUserBalance,
-                getErc20TokenBalance
+                getErc20TokenBalance,
+                getAlchemyNetwork
             }}
         >
             {children}
