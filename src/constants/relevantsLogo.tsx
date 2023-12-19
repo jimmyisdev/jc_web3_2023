@@ -1,1 +1,1 @@
-export const relevantsLogo = ['binance', 'metamask', 'ethereum', 'alchemy']
+export const relevantsLogo = ['binance', 'metamask', 'ethereum', 'alchemy', "nextjs"]
