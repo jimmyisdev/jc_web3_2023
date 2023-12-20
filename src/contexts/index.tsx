@@ -115,6 +115,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     async function getErc20TokenBalance() {
+        console.log(118)
         if (sender) {
             const ALCHEMY_SETTING = {
                 apiKey: Alchemy_API_KEY,
@@ -161,9 +162,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 .catch(error => {
                     setGetTokenErrorMsg("Failed to get token")
                     setIsLoadingToken(false)
-                    console.log(error, "")
+                    console.log(error)
                 })
-
         }
     }
     async function transferCoin() {
@@ -184,7 +184,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         const token_contract = new ethers.Contract(address, ERC20ABI, wallet);
         await token_contract.transfer(sender, "1000000000000000000")
             .then(result => {
-                getErc20TokenBalance()
+
             }).catch((error) => console.log(error))
     }
 

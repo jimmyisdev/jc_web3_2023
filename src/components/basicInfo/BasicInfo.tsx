@@ -44,7 +44,6 @@ export default function BasicInfo() {
                             {isLoadingBalance ? <Loading /> :
                                 <span className='flex flex-row items-center'>
                                     <span className='ml-2 flex flex-row items-center'>{userBalance}<SiEthereum /></span>
-
                                 </span>
                             }
                             {!isLoadingBalance && !!getUserBalanceErrorMsg?.length && (
@@ -53,7 +52,8 @@ export default function BasicInfo() {
                         </div>
                         <div className='p-1 mb-2 '>
                             <h1 className='mb-1 font-bold'>Token - ERC20</h1>
-                            {isLoadingToken ? <Loading /> : (
+                            {isLoadingToken && <Loading />}
+                            {!isLoadingToken && userTokens.length && (
                                 userTokens.filter(item => !item.isJverseAsset).map(item => {
                                     return (
                                         <div className='flex flex-col mb-2 border-b-2 border-blue-100' key={item.tokenAddress}>

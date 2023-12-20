@@ -1,15 +1,11 @@
 'use client'
-import React, { useEffect, useState } from 'react'
 import Box from '../shared/Box/Box'
 import BoxHeader from '../shared/Box/BoxHeader'
 import { useStateContext } from '@/contexts';
 import Loading from '../shared/Loading/Loading';
 export default function JverseAsset() {
     const {
-        getUserBalance, isLoadingBalance, userBalance, getUserBalanceErrorMsg,
-        getErc20TokenBalance, isLoadingToken, userTokens, getTokenErrorMsg,
-        getAlchemyNetwork, alchemyNetwork, currentNetwork, currentConnectedAccounts,
-        sender,
+        isLoadingToken, userTokens, getTokenErrorMsg,
     } = useStateContext();
     return (
         <Box>
