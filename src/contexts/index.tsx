@@ -30,6 +30,8 @@ interface stateContextValue {
     transferVal: number;
     setTransferVal: React.Dispatch<React.SetStateAction<number>>,
     transferCoin: () => {},
+    transactionId: string | undefined,
+    setTransactionId: React.Dispatch<React.SetStateAction<string | undefined>>,
     //accounts, sender, receiver, transfer-----------------
 
     //get ether balance and token-----------------
@@ -63,6 +65,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [sender, setSender] = useState<string | undefined>('');
     const [receiver, setReceiver] = useState<string | undefined>('');
     const [transferVal, setTransferVal] = useState<number>(0)
+    const [transactionId, setTransactionId] = useState<string | undefined>('');
 
     //get ether balance and token-----------------
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
@@ -115,7 +118,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     async function getErc20TokenBalance() {
-        console.log(118)
         if (sender) {
             const ALCHEMY_SETTING = {
                 apiKey: Alchemy_API_KEY,
@@ -167,7 +169,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
     async function transferCoin() {
-        // let wallet = new Signer()
         const provider = ethers.getDefaultProvider(currentNetwork, {
             alchemy: Alchemy_API_KEY
         })
@@ -183,9 +184,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         let address = ERC20_JVERSE_ADDRESSES[currentNetwork][0] ? ERC20_JVERSE_ADDRESSES[currentNetwork][0] : ''
         const token_contract = new ethers.Contract(address, ERC20ABI, wallet);
         await token_contract.transfer(sender, "1000000000000000000")
-            .then(result => {
-
-            }).catch((error) => console.log(error))
+            .then(result => setTransactionId(result.hash)
+            ).catch((error) => console.log(error))
     }
 
     return (
@@ -212,6 +212,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setTransferVal,
                 transferCoin,
                 transferToken,
+                transactionId,
+                setTransactionId,
 
                 //get ether balance and token
                 getUserBalance,

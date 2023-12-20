@@ -6,7 +6,8 @@ import Box from '../shared/Box/Box';
 import { useStateContext } from '@/contexts';
 
 export default function JverseFaucet() {
-    const { sender, getErc20TokenBalance, transferToken, currentNetwork } = useStateContext();
+    const sepolia_etherscan = "https://sepolia.etherscan.io/tx/"
+    const { sender, getErc20TokenBalance, transferToken, currentNetwork, transactionId } = useStateContext();
     const [gotFaucet, setGotFaucet] = useState(false)
 
     async function handleConfirmBtn() {
@@ -16,6 +17,7 @@ export default function JverseFaucet() {
             getErc20TokenBalance()
         }, 7000);
     }
+
     return (
         <Box>
             {currentNetwork === 'sepolia' ?
@@ -30,11 +32,19 @@ export default function JverseFaucet() {
                             <span>TO</span>
                             <span>{sender?.length ? `${sender.slice(0, 25)}.....` : "Please select account in setting panel"}</span>
                         </div>
-                        <div className={`flex flex-col ${gotFaucet && "hidden"}`}>
+                        <div className={`flex flex-col `}>
                             {/* {!!transferError.length && <span className='text-red-700'>{transferError}</span>} */}
-                            <button onClick={handleConfirmBtn}>
-                                Confirm
-                            </button>
+                            {
+                                gotFaucet ? <span className='text-center'>
+                                    <a href={`${sepolia_etherscan}${transactionId}`} target="_blank">Check TX on Etherscan</a>
+                                </span>
+                                    : <button onClick={handleConfirmBtn}>
+                                        Confirm
+                                    </button>
+                            }
+
+
+
                         </div>
                     </div>
                 </div> : <div>Currently only support SEPOLIA network</div>
