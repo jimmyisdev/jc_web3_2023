@@ -24,9 +24,10 @@ export default function RootLayout({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="/dist/output.css" rel="stylesheet" />
+        <link rel="icon" href="/jverse_icon.png" />
+        <link rel="apple-touch-icon" href="/jverse_icon.png" />
       </head>
       <body className={inter.className}>
-
         <SocketsContextProvider>
           <StateContextProvider>
             <Header />
