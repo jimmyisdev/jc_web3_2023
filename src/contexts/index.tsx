@@ -1,10 +1,12 @@
 "use client"
 import { Alchemy, Network, Wallet, Utils } from 'alchemy-sdk';
 import React, { createContext, useState } from 'react';
-import { ethers, parseUnits } from 'ethers';
+import { ethers, formatUnits, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
+import { ERC20_JVERSE_ADDRESSES } from '@/constants/jverseAddress';
+import { ERC20ABI } from '@/constants/contractABI';
 
 interface stateContextValue {
     //control network-----------------
@@ -37,13 +39,13 @@ interface stateContextValue {
     setUserBalance: React.Dispatch<React.SetStateAction<string | undefined>>,
     isLoadingBalance: Boolean,
     getUserBalanceErrorMsg: string | null;
-
     //-----token
     getErc20TokenBalance: () => {},
     userTokens: ERC20TOKEN[],
     setUserTokens: React.Dispatch<React.SetStateAction<ERC20TOKEN[]>>,
     isLoadingToken: Boolean,
     getTokenErrorMsg: string | null;
+    transferToken: () => {},
     //-----------------get ether balance and token
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
@@ -66,7 +68,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
     const [isLoadingBalance, setIsLoadingBalance] = useState(false)
     const [getUserBalanceErrorMsg, setGetUserBalanceErrorMsg] = useState<string | null>(null);
-
     const [userTokens, setUserTokens] = useState<ERC20TOKEN[]>([]);
     const [isLoadingToken, setIsLoadingToken] = useState(false)
     const [getTokenErrorMsg, setGetTokenErrorMsg] = useState<string | null>(null);
@@ -84,6 +85,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             ethereum.request({ method: 'eth_requestAccounts' }).then(result => {
                 if (Array.isArray(result) && result.length) {
                     setCurrentConnectedAccounts(result)
+                    setSender(result[0])
                 }
             }).catch((error) => {
                 setConnectErrorMsg(error.message)
@@ -135,7 +137,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                                 name: '',
                                 symbol: '',
                                 tokenBalance: Number(tokenBalance),
-                                tokenAddress: tokenAddress
+                                tokenAddress: tokenAddress,
+                                isJverseAsset: ERC20_JVERSE_ADDRESSES[currentNetwork].includes(tokenAddress.toLowerCase())
                             }
                             await alchemy.core.getTokenMetadata(tokenAddress)
                                 .then(metadata => {
@@ -146,7 +149,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                                 }).then(() => {
                                     setUserTokens(prevArray => [...prevArray, tokenData])
                                     setIsLoadingToken(false)
-
                                 })
                                 .catch(error => {
                                     setGetTokenErrorMsg("Failed to get token")
@@ -169,52 +171,21 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         const provider = ethers.getDefaultProvider(currentNetwork, {
             alchemy: Alchemy_API_KEY
         })
-        // provider.getsi
-
-        // await provider.call({
-        //     to: receiver,
-        //     value: ethers.parseEther(String(transferVal)),
-        // })
-
         const limit: bigint = await provider.estimateGas({
             from: sender,
             to: receiver,
             value: ethers.parseEther(String(transferVal)),
         });
-
-        // const tx = await .signer.sendTransaction({
-        //     from: "0x1F0c72E13718D9136FfE51b89289b239A1BcfE28",
-        //     to: "0x350a97Aa777CcfE518197C34342C5bA262825B35",
-        //     value: parseUnits("0.0000001", "ether"),
-        //     gasLimit: limit,
-        //     nonce: await signer.getNonce(),
-        //     maxPriorityFeePerGas: parseUnits("1", "gwei"),
-        //     chainId: 11155111,
-        // });
-
-
-
-        // const wallet = new Wallet(PRIVATE_KEY)
-        // const alchemy = new Alchemy(ALCHEMY_SETTING);
-        // const transaction = {
-        //     to: receiver,
-        //     value: ethers.parseEther(String(transferVal)),
-        //     gasLimit: "21000",
-        //     nonce: await alchemy.core.getTransactionCount(wallet.getAddress())
-        // }
-        // const rawTransaction = await wallet.signTransaction(transaction);
-        // const txhash = await alchemy.transact.sendTransaction(rawTransaction)
-
-
-        // const alchemy = new Alchemy(ALCHEMY_SETTING);
-        // await alchemy.core.call({
-        //     to: receiver,
-        //     from: sender,
-        //     value: ethers.parseEther(String(transferVal))
-        // }).then((result) => { console.log(result, 108) }).catch((error) => console.log(error))
     }
     async function transferToken() {
-
+        const provider = new ethers.AlchemyProvider(currentNetwork, Alchemy_API_KEY)
+        const wallet = new ethers.Wallet(PRIVATE_KEY, provider)
+        let address = ERC20_JVERSE_ADDRESSES[currentNetwork][0] ? ERC20_JVERSE_ADDRESSES[currentNetwork][0] : ''
+        const token_contract = new ethers.Contract(address, ERC20ABI, wallet);
+        await token_contract.transfer(sender, "1000000000000000000")
+            .then(result => {
+                getErc20TokenBalance()
+            }).catch((error) => console.log(error))
     }
 
     return (
@@ -240,6 +211,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 transferVal,
                 setTransferVal,
                 transferCoin,
+                transferToken,
 
                 //get ether balance and token
                 getUserBalance,

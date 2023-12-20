@@ -9,6 +9,7 @@ import SettingPanel from "@/components/settingPanel/SettingPanel";
 import Image from "next/image";
 import { relevantsLogo } from "@/constants/relevantsLogo";
 import Marquee from "react-fast-marquee";
+import JverseFaucet from "@/components/jverseFaucet/JverseFaucet";
 
 export default function Home() {
   const { connectErrorMsg } = useStateContext();
@@ -18,8 +19,9 @@ export default function Home() {
         <CurrentPrice />
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <SettingPanel />}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicInfo />}
-        {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicTransfer />}
+        {/* {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicTransfer />} */}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseAsset />}
+        {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseFaucet />}
       </div>
       <div className="w-screen flex flex-row flex-wrap justify-around">
         <Marquee pauseOnHover={true}>

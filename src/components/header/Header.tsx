@@ -7,10 +7,11 @@ export default function Header() {
     return (
         <div className='relative text-center  flex flex-wrap justify-between p-3 align-middle'>
             <div className=' flex flex-row items-center'>
-                <div className='relative w-20 h-20 mr-2 bg-white rounded-full  bg-opacity-50'>
-                    <Image src={`/jverse_icon.png`} height={80} width={80} alt="jverse" className='relative z-10' />
+                <Image src={`/jverse_icon.png`} height={60} width={60} alt="jverse" className='mr-5' />
+                <div className='flex flex-col'>
+                    <span>Current Network</span>
+                    <span className='font-bold'>{!!currentNetwork?.length && `[${currentNetwork.toUpperCase()}]`}</span>
                 </div>
-                <span>{!!currentNetwork?.length && `[${currentNetwork.toUpperCase()}]`}</span>
             </div>
             <button title="Connect MetaMask" className="absolute right-6 top-6" onClick={connectWalletHandler}>
                 <FaWallet size={30} />

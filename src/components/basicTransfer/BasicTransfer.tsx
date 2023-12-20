@@ -9,16 +9,14 @@ export default function BasicTransfer() {
     const { userBalance, transferVal, setTransferVal, sender, setSender, receiver, setReceiver, currentConnectedAccounts, transferCoin } = useStateContext();
     const [transferError, setTransferError] = useState('');
     async function handleTransferBtn() {
-        // if (transferVal > Number(userBalance) || transferVal <= 0) {
-        //     return setTransferError("Transfer value is not valid")
-        // } else if (receiver?.length && !!transferVal) {
-        //     return setTransferError("Please check your receive field or transfer value again")
-        // }
+        if (transferVal > Number(userBalance) || transferVal <= 0) {
+            return setTransferError("Transfer value is invalid")
+        } else if (receiver?.length && !!transferVal) {
+            return setTransferError("Please check your receive field or transfer value again")
+        }
         await transferCoin()
     }
-    useEffect(() => {
-        currentConnectedAccounts?.length && setSender(currentConnectedAccounts[0])
-    }, [currentConnectedAccounts.length])
+
     return (
         <Box>
             <div className='flex flex-col min-h-full align-center'>
@@ -46,7 +44,7 @@ export default function BasicTransfer() {
                             />
                         </div>
                         <div className='flex flex-col'>
-                            {!!transferError.length && <span className='text-red-700'>{transferError}</span>}
+                            {transferError.length && <span className='text-red-700'>{transferError}</span>}
                             <button onClick={handleTransferBtn}>
                                 Confirm
                             </button>

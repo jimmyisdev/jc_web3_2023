@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import Box from '../shared/Box/Box'
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
-import { SiChainlink, SiEthereum } from "react-icons/si";
+import { SiEthereum } from "react-icons/si";
 import Loading from '../shared/Loading/Loading';
 
 export default function BasicInfo() {
@@ -54,7 +54,7 @@ export default function BasicInfo() {
                         <div className='p-1 mb-2 '>
                             <h1 className='mb-1 font-bold'>Token - ERC20</h1>
                             {isLoadingToken ? <Loading /> : (
-                                userTokens.map(item => {
+                                userTokens.filter(item => !item.isJverseAsset).map(item => {
                                     return (
                                         <div className='flex flex-col mb-2 border-b-2 border-blue-100' key={item.tokenAddress}>
                                             <span>{`${item.symbol}: ${item.tokenBalance}`}</span>

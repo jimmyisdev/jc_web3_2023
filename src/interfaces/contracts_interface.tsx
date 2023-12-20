@@ -4,7 +4,8 @@ interface ERC20TOKEN {
     name: string,
     symbol: string,
     tokenBalance: number,
-    tokenAddress: string
+    tokenAddress: string,
+    isJverseAsset: boolean
 }
 
 export type { ERC20TOKEN }
