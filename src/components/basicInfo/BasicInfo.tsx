@@ -5,6 +5,7 @@ import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
 import { SiEthereum } from "react-icons/si";
 import Loading from '../shared/Loading/Loading';
+import TokenItem from '../shared/Display/Token/TokenItem';
 
 export default function BasicInfo() {
     const {
@@ -56,18 +57,16 @@ export default function BasicInfo() {
                             {!isLoadingToken && userTokens.length && (
                                 userTokens.filter(item => !item.isJverseAsset).map(item => {
                                     return (
-                                        <div className='flex flex-col mb-2 border-b-2 border-blue-100' key={item.tokenAddress}>
-                                            <span>{`${item.symbol}: ${item.tokenBalance}`}</span>
-                                        </div>
+                                        <TokenItem key={item.tokenAddress} data={item} />
                                     )
                                 }))}
                             {!isLoadingToken && !!getTokenErrorMsg?.length && (
                                 <span>{getTokenErrorMsg}</span>
                             )}
                         </div>
-                        <div className='p-1 mb-2 '>
+                        {/* <div className='p-1 mb-2 '>
                             <h1 className='mb-1 font-bold'>NFT - ERC721 </h1>
-                        </div>
+                        </div> */}
                     </div>
                 }
             </div >

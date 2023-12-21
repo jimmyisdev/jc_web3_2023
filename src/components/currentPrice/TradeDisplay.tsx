@@ -26,8 +26,7 @@ export default function TradeDisplay({ data }: { data: CoinTransaction | null })
                             <div className='flex flex-col '>
                                 <span>Time : {data?.currentTradeTime}</span>
                                 <span>Quantity :  {data?.currentQty}</span>
-                            </div>
-                        }
+                            </div>}
                     </div>
             }
         </div>

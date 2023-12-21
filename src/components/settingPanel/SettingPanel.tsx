@@ -12,7 +12,7 @@ export default function SettingPanel() {
                 <BoxHeader headerText="setting panel" />
                 <div className='mb-3'>
                     <div className='w-full mb-3 flex flex-col'>
-                        <label>Select Network</label>
+                        <label className='font-bold mb-1'>Select Network</label>
                         <select
                             className='text-blue-900'
                             value={currentNetwork}
@@ -27,7 +27,7 @@ export default function SettingPanel() {
                         </select>
                     </div>
                     <div className='w-full mb-3 flex flex-col'>
-                        <label>Select Account</label>
+                        <label className='font-bold mb-1'>Select Account</label>
                         <select
                             className='text-blue-900'
                             value={sender}
