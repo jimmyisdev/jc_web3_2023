@@ -33,18 +33,21 @@ export default function JverseFaucet() {
                             <h1 className='mb-1 font-bold'>TO</h1>
                             <span>{sender?.length ? `${sender.slice(0, 25)}.....` : "Please select account in setting panel"}</span>
                         </div>
-                        <div className={`flex flex-col `}>
-                            {/* {!!transferError.length && <span className='text-red-700'>{transferError}</span>} */}
-                            {
-                                gotFaucet ?
-                                    <a href={`${sepolia_etherscan}${transactionId}`} target="_blank">
-                                        <span className='font-bold flex flex-row justify-center'>Check on <Image src="/etherscan.svg" alt="etherscan" width="64" height="64" className='ml-2' /></span>
-                                    </a>
-                                    : <button onClick={handleConfirmBtn}>
-                                        Confirm
-                                    </button>
-                            }
-                        </div>
+                        {
+                            !!sender?.length &&
+                            <div className={`flex flex-col `}>
+                                {/* {!!transferError.length && <span className='text-red-700'>{transferError}</span>} */}
+                                {
+                                    gotFaucet ?
+                                        <a href={`${sepolia_etherscan}${transactionId}`} target="_blank">
+                                            <span className='font-bold flex flex-row justify-center'>Check on <Image src="/etherscan.svg" alt="etherscan" width="64" height="64" className='ml-2' /></span>
+                                        </a>
+                                        : <button onClick={handleConfirmBtn}>
+                                            Confirm
+                                        </button>
+                                }
+                            </div>
+                        }
                     </div>
                 </div> : <div>Currently only support SEPOLIA network</div>
             }
