@@ -7,7 +7,7 @@ import { useStateContext } from '@/contexts';
 import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
 import Image from "next/image";
-import { relevantsLogo } from "@/constants/relevantsLogo";
+import { relevantsLogo } from "@/constants/utils";
 import Marquee from "react-fast-marquee";
 import JverseFaucet from "@/components/jverseFaucet/JverseFaucet";
 

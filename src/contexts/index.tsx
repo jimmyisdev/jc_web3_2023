@@ -5,8 +5,9 @@ import { ethers, formatUnits, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
-import { ERC20_JVERSE_ADDRESSES } from '@/constants/jverseAddress';
-import { ERC20ABI } from '@/constants/contractABI';
+import { ERC20_JVERSE_ADDRESSES, TOKEN_FAUCET_ADDRESS } from '@/constants/address/jverseAddress';
+import { ERC20ABI } from '@/constants/abi/contractABI';
+import { FAUCET_ABI } from '@/constants/abi/tokenFaucetABI';
 
 interface stateContextValue {
     //control network-----------------
@@ -49,6 +50,14 @@ interface stateContextValue {
     getTokenErrorMsg: string | null;
     transferToken: () => {},
     //-----------------get ether balance and token
+
+    //faucet function-----------------
+    requestFaucetForToken: () => {}
+    isLoadingFaucet: Boolean,
+    setIsLoadingFaucet: React.Dispatch<React.SetStateAction<boolean>>,
+    faucetRequestError: string | null;
+    //-----------------faucet function
+
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
@@ -74,6 +83,11 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [userTokens, setUserTokens] = useState<ERC20TOKEN[]>([]);
     const [isLoadingToken, setIsLoadingToken] = useState(false)
     const [getTokenErrorMsg, setGetTokenErrorMsg] = useState<string | null>(null);
+
+    //faucet function-----------------
+    const [isLoadingFaucet, setIsLoadingFaucet] = useState(false);
+    const [faucetRequestError, setFaucetRequestError] = useState<string | null>(null);
+
 
     function getAlchemyNetwork() {
         for (let i = 0; i < NETWORKS.length; i++) {
@@ -178,11 +192,28 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             value: ethers.parseEther(String(transferVal)),
         });
     }
+
+    async function requestFaucetForToken() {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
+        setIsLoadingFaucet(true)
+        setFaucetRequestError('')
+        try {
+            const tx = await faucetContract.requestTokens()
+            setTransactionId(tx.hash)
+            await tx.wait();
+        } catch (error: any) {
+            if (error?.message) {
+                console.log(error?.message)
+                setFaucetRequestError("Failed to request tokens")
+            }
+        }
+        setIsLoadingFaucet(false)
+    }
     async function transferToken() {
         const provider = new ethers.AlchemyProvider(currentNetwork, Alchemy_API_KEY)
-        const wallet = new ethers.Wallet(PRIVATE_KEY, provider)
         let address = ERC20_JVERSE_ADDRESSES[currentNetwork][0] ? ERC20_JVERSE_ADDRESSES[currentNetwork][0] : ''
-        const token_contract = new ethers.Contract(address, ERC20ABI, wallet);
+        const token_contract = new ethers.Contract(address, ERC20ABI);
         await token_contract.transfer(sender, "1000000000000000000")
             .then(result => setTransactionId(result.hash)
             ).catch((error) => console.log(error))
@@ -227,6 +258,12 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 userTokens,
                 setUserTokens,
                 getTokenErrorMsg,
+
+                //faucet function
+                requestFaucetForToken,
+                isLoadingFaucet,
+                setIsLoadingFaucet,
+                faucetRequestError
             }}
         >
             {children}
