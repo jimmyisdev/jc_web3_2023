@@ -44,7 +44,7 @@ export default function BasicTransfer() {
                             />
                         </div>
                         <div className='flex flex-col'>
-                            {transferError.length && <span className='text-red-700'>{transferError}</span>}
+                            {/* {transferError.length && <span className='text-red-700'>{transferError}</span>} */}
                             <button onClick={handleTransferBtn}>
                                 Confirm
                             </button>

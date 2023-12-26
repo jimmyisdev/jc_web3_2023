@@ -9,6 +9,12 @@ import { ERC20_JVERSE_ADDRESSES, TOKEN_FAUCET_ADDRESS } from '@/constants/addres
 import { ERC20ABI } from '@/constants/abi/contractABI';
 import { FAUCET_ABI } from '@/constants/abi/tokenFaucetABI';
 
+interface ProviderRpcError extends Error {
+    message: string;
+    code: number;
+    data?: unknown;
+}
+
 interface stateContextValue {
     //control network-----------------
     currentNetwork: string;
@@ -56,8 +62,8 @@ interface stateContextValue {
     isLoadingFaucet: Boolean,
     setIsLoadingFaucet: React.Dispatch<React.SetStateAction<boolean>>,
     faucetRequestError: string | null;
+    setFaucetRequestError: React.Dispatch<React.SetStateAction<string>>,
     //-----------------faucet function
-
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
@@ -86,7 +92,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     //faucet function-----------------
     const [isLoadingFaucet, setIsLoadingFaucet] = useState(false);
-    const [faucetRequestError, setFaucetRequestError] = useState<string | null>(null);
+    const [faucetRequestError, setFaucetRequestError] = useState<string>('');
 
 
     function getAlchemyNetwork() {
@@ -99,14 +105,17 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     async function connectWalletHandler() {
         if (window.ethereum) {
             const ethereum = window.ethereum as MetaMaskInpageProvider;
-            ethereum.request({ method: 'eth_requestAccounts' }).then(result => {
-                if (Array.isArray(result) && result.length) {
-                    setCurrentConnectedAccounts(result)
-                    setSender(result[0])
-                }
-            }).catch((error) => {
-                setConnectErrorMsg(error.message)
-            })
+            try {
+                ethereum.request({ method: 'eth_requestAccounts' }).then(result => {
+                    if (Array.isArray(result) && result.length) {
+                        setCurrentConnectedAccounts(result)
+                        setSender(result[0])
+                    }
+                })
+            } catch (error) {
+                setConnectErrorMsg("Failed to connect wallet")
+                console.log(error)
+            }
         } else {
             setConnectErrorMsg("Need to install MetaMask before using our service")
         }
@@ -117,17 +126,19 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         setUserBalance("0")
         if (currentConnectedAccounts?.length && sender) {
             setIsLoadingBalance(true)
-            await provider.getBalance(sender)
-                .then((result) => {
-                    let balance = result;
-                    const formatedBalance = ethers.formatEther(balance);
-                    setUserBalance(formatedBalance)
-                    setIsLoadingBalance(false)
-                }).catch((error) => {
-                    setGetUserBalanceErrorMsg("Failed to get balance")
-                    setIsLoadingBalance(false)
-                    console.log(error)
-                });
+            try {
+                await provider.getBalance(sender)
+                    .then((result) => {
+                        let balance = result;
+                        const formatedBalance = ethers.formatEther(balance);
+                        setUserBalance(formatedBalance)
+                        setIsLoadingBalance(false)
+                    })
+            } catch (error) {
+                setGetUserBalanceErrorMsg("Failed to get balance")
+                setIsLoadingBalance(false)
+                console.log(error)
+            }
         }
     }
 
@@ -167,20 +178,36 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                                     setUserTokens(prevArray => [...prevArray, tokenData])
                                     setIsLoadingToken(false)
                                 })
-                                .catch(error => {
-                                    setGetTokenErrorMsg("Failed to get token")
+                                .catch(e => {
+                                    let error: ProviderRpcError = e;
+                                    setGetTokenErrorMsg(error.message)
                                     setIsLoadingToken(false)
-                                    console.log(error)
                                 })
                         }
                     }
                 })
-                .catch(error => {
-                    setGetTokenErrorMsg("Failed to get token")
+                .catch(e => {
+                    let error: ProviderRpcError = e;
+                    setGetTokenErrorMsg(error.message)
                     setIsLoadingToken(false)
                     console.log(error)
                 })
         }
+    }
+    async function requestFaucetForToken() {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
+        setIsLoadingFaucet(true)
+        setFaucetRequestError('')
+        try {
+            const tx = await faucetContract.requestTokens()
+            setTransactionId(tx.hash)
+            await tx.wait();
+        } catch (error) {
+            setFaucetRequestError("Failed to request tokens")
+            console.log(error)
+        }
+        setIsLoadingFaucet(false)
     }
     async function transferCoin() {
         const provider = ethers.getDefaultProvider(currentNetwork, {
@@ -191,24 +218,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             to: receiver,
             value: ethers.parseEther(String(transferVal)),
         });
-    }
-
-    async function requestFaucetForToken() {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
-        setIsLoadingFaucet(true)
-        setFaucetRequestError('')
-        try {
-            const tx = await faucetContract.requestTokens()
-            setTransactionId(tx.hash)
-            await tx.wait();
-        } catch (error: any) {
-            if (error?.message) {
-                console.log(error?.message)
-                setFaucetRequestError("Failed to request tokens")
-            }
-        }
-        setIsLoadingFaucet(false)
     }
     async function transferToken() {
         const provider = new ethers.AlchemyProvider(currentNetwork, Alchemy_API_KEY)
@@ -263,7 +272,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 requestFaucetForToken,
                 isLoadingFaucet,
                 setIsLoadingFaucet,
-                faucetRequestError
+                faucetRequestError,
+                setFaucetRequestError
             }}
         >
             {children}

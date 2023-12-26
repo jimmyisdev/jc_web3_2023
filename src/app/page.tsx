@@ -19,8 +19,8 @@ export default function Home() {
         <CurrentPrice />
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <SettingPanel />}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicInfo />}
-        {/* {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicTransfer />} */}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseAsset />}
+        {/* {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <BasicTransfer />} */}
         {!!connectErrorMsg?.length ? <NoWallet errMsg={connectErrorMsg} /> : <JverseFaucet />}
       </div>
       <div className="w-screen flex flex-row flex-wrap justify-around">
