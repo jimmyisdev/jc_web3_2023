@@ -13,9 +13,9 @@ export default function Header() {
                     <span className='font-bold'>{!!currentNetwork?.length && `[${currentNetwork.toUpperCase()}]`}</span>
                 </div>
             </div>
-            <button title="Connect MetaMask" className="absolute right-6 top-6" onClick={connectWalletHandler}>
+            {/* <button title="Connect MetaMask" className="absolute right-6 top-6" onClick={connectWalletHandler}>
                 <FaWallet size={30} />
-            </button>
+            </button> */}
         </div>
     )
 }

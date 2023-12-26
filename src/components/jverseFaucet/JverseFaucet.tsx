@@ -13,7 +13,7 @@ export default function JverseFaucet() {
         currentConnectedAccounts,
         getErc20TokenBalance,
         currentNetwork,
-        transactionId,
+        faucetTransactionId,
         requestFaucetForToken,
         isLoadingFaucet,
         setIsLoadingFaucet,
@@ -26,7 +26,7 @@ export default function JverseFaucet() {
     }
 
     useEffect(() => {
-        !!transactionId && getErc20TokenBalance()
+        !!faucetTransactionId && getErc20TokenBalance()
     }, [isLoadingFaucet])
 
     useEffect(() => {
@@ -47,14 +47,14 @@ export default function JverseFaucet() {
                             <div className={`flex flex-col `}>
                                 {!!isLoadingFaucet && <Loading />}
                                 {!isLoadingFaucet && !!faucetRequestError && <span className='text-red-700'>{faucetRequestError}</span>}
-                                {!isLoadingFaucet && !!transactionId &&
-                                    <a href={`${SEPOLIA_ETHERSCAN}${transactionId}`} target="_blank">
+                                {!isLoadingFaucet && !!faucetTransactionId &&
+                                    <a href={`${SEPOLIA_ETHERSCAN}${faucetTransactionId}`} target="_blank">
                                         <span className={`flex flex-rol justify-center items-center`}>
-                                            <span>TX: {transactionId.slice(0, 15)}...</span>
+                                            <span>TX: {faucetTransactionId.slice(0, 15)}...</span>
                                             <TbHandFinger />
                                         </span>
                                     </a>}
-                                {!isLoadingFaucet && !transactionId?.length && !faucetRequestError?.length &&
+                                {!isLoadingFaucet && !faucetTransactionId?.length && !faucetRequestError?.length &&
                                     <button onClick={handleConfirmBtn} disabled={!!isLoadingFaucet}>
                                         Get Token
                                     </button>}

@@ -1,7 +1,7 @@
 "use client"
 import { Alchemy, Network, Wallet, Utils } from 'alchemy-sdk';
 import React, { createContext, useState } from 'react';
-import { ethers, formatUnits, parseUnits } from 'ethers';
+import { ethers, formatUnits, parseUnits, toBigInt } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
@@ -37,8 +37,6 @@ interface stateContextValue {
     transferVal: number;
     setTransferVal: React.Dispatch<React.SetStateAction<number>>,
     transferCoin: () => {},
-    transactionId: string | undefined,
-    setTransactionId: React.Dispatch<React.SetStateAction<string | undefined>>,
     //accounts, sender, receiver, transfer-----------------
 
     //get ether balance and token-----------------
@@ -54,7 +52,15 @@ interface stateContextValue {
     setUserTokens: React.Dispatch<React.SetStateAction<ERC20TOKEN[]>>,
     isLoadingToken: Boolean,
     getTokenErrorMsg: string | null;
-    transferToken: () => {},
+    transferToken: (decimals: number, tokenAddress: string) => {},
+    isLoadingTransferToken: Boolean,
+    setIsLoadingTransferToken: React.Dispatch<React.SetStateAction<boolean>>,
+    transferTokenError: string | null;
+    setTransferTokenError: React.Dispatch<React.SetStateAction<string>>,
+    transferTokenId: string | undefined,
+    setTransferTokenId: React.Dispatch<React.SetStateAction<string | undefined>>,
+    selectedToken: string,
+    setSelectedToken: React.Dispatch<React.SetStateAction<string>>,
     //-----------------get ether balance and token
 
     //faucet function-----------------
@@ -63,6 +69,8 @@ interface stateContextValue {
     setIsLoadingFaucet: React.Dispatch<React.SetStateAction<boolean>>,
     faucetRequestError: string | null;
     setFaucetRequestError: React.Dispatch<React.SetStateAction<string>>,
+    faucetTransactionId: string | undefined,
+    setFaucetTransactionId: React.Dispatch<React.SetStateAction<string | undefined>>,
     //-----------------faucet function
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
@@ -79,8 +87,11 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentConnectedAccounts, setCurrentConnectedAccounts] = useState<string[]>([]);
     const [sender, setSender] = useState<string | undefined>('');
     const [receiver, setReceiver] = useState<string | undefined>('');
-    const [transferVal, setTransferVal] = useState<number>(0)
-    const [transactionId, setTransactionId] = useState<string | undefined>('');
+    const [transferVal, setTransferVal] = useState<number>(0);
+    const [isLoadingTransferToken, setIsLoadingTransferToken] = useState(false);
+    const [transferTokenError, setTransferTokenError] = useState<string>('');
+    const [transferTokenId, setTransferTokenId] = useState<string | undefined>('');
+    const [selectedToken, setSelectedToken] = useState('');
 
     //get ether balance and token-----------------
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
@@ -93,6 +104,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     //faucet function-----------------
     const [isLoadingFaucet, setIsLoadingFaucet] = useState(false);
     const [faucetRequestError, setFaucetRequestError] = useState<string>('');
+    const [faucetTransactionId, setFaucetTransactionId] = useState<string | undefined>('');
 
 
     function getAlchemyNetwork() {
@@ -166,7 +178,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                                 symbol: '',
                                 tokenBalance: Number(tokenBalance),
                                 tokenAddress: tokenAddress,
-                                isJverseAsset: ERC20_JVERSE_ADDRESSES[currentNetwork].includes(tokenAddress.toLowerCase())
+                                isJverseAsset: ERC20_JVERSE_ADDRESSES[currentNetwork].includes(tokenAddress.toLowerCase()),
                             }
                             await alchemy.core.getTokenMetadata(tokenAddress)
                                 .then(metadata => {
@@ -201,7 +213,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         setFaucetRequestError('')
         try {
             const tx = await faucetContract.requestTokens()
-            setTransactionId(tx.hash)
+            setFaucetTransactionId(tx.hash)
             await tx.wait();
         } catch (error) {
             setFaucetRequestError("Failed to request tokens")
@@ -210,22 +222,28 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoadingFaucet(false)
     }
     async function transferCoin() {
-        const provider = ethers.getDefaultProvider(currentNetwork, {
-            alchemy: Alchemy_API_KEY
-        })
-        const limit: bigint = await provider.estimateGas({
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner()
+        const data = [{
             from: sender,
             to: receiver,
-            value: ethers.parseEther(String(transferVal)),
-        });
+            // value: ethers.utils.parseUnits(strEther, 'ether').toHexString()
+        }];
     }
-    async function transferToken() {
-        const provider = new ethers.AlchemyProvider(currentNetwork, Alchemy_API_KEY)
-        let address = ERC20_JVERSE_ADDRESSES[currentNetwork][0] ? ERC20_JVERSE_ADDRESSES[currentNetwork][0] : ''
-        const token_contract = new ethers.Contract(address, ERC20ABI);
-        await token_contract.transfer(sender, "1000000000000000000")
-            .then(result => setTransactionId(result.hash)
-            ).catch((error) => console.log(error))
+    async function transferToken(decimals: number, tokenAddress: string) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const val = Number(`${transferVal}e${decimals}`)
+        const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, await provider.getSigner())
+        try {
+            const tx = await tokenContract.transfer(receiver, BigInt(val))
+            setTransferTokenId(tx.hash)
+            console.log(tx)
+            await tx.wait();
+        } catch (error) {
+            console.log(error)
+            setTransferTokenError("Transfer failed")
+        }
+        setIsLoadingTransferToken(false)
     }
 
     return (
@@ -240,21 +258,6 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 getAlchemyNetwork,
                 connectErrorMsg,
                 setConnectErrorMsg,
-
-                //accounts, sender, receiver, transfer
-                currentConnectedAccounts,
-                setCurrentConnectedAccounts,
-                sender,
-                setSender,
-                receiver,
-                setReceiver,
-                transferVal,
-                setTransferVal,
-                transferCoin,
-                transferToken,
-                transactionId,
-                setTransactionId,
-
                 //get ether balance and token
                 getUserBalance,
                 isLoadingBalance,
@@ -268,12 +271,36 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setUserTokens,
                 getTokenErrorMsg,
 
+                //accounts, sender, receiver, transfer
+                currentConnectedAccounts,
+                setCurrentConnectedAccounts,
+                sender,
+                setSender,
+                receiver,
+                setReceiver,
+                transferVal,
+                setTransferVal,
+                transferCoin,
+
+                //transfer token
+                selectedToken,
+                setSelectedToken,
+                transferToken,
+                transferTokenId,
+                setTransferTokenId,
+                transferTokenError,
+                setTransferTokenError,
+                isLoadingTransferToken,
+                setIsLoadingTransferToken,
+
                 //faucet function
                 requestFaucetForToken,
                 isLoadingFaucet,
                 setIsLoadingFaucet,
                 faucetRequestError,
-                setFaucetRequestError
+                setFaucetRequestError,
+                setFaucetTransactionId,
+                faucetTransactionId,
             }}
         >
             {children}
