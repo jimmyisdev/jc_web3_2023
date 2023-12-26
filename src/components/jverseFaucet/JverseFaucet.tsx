@@ -7,6 +7,7 @@ import Box from '../shared/Box/Box';
 import { useStateContext } from '@/contexts';
 import { SEPOLIA_ETHERSCAN } from '@/constants/utils';
 import Loading from '../shared/Loading/Loading';
+import EtherscanLink from '../shared/EtherscanLink/EtherscanLink';
 
 export default function JverseFaucet() {
     const {
@@ -48,12 +49,12 @@ export default function JverseFaucet() {
                                 {!!isLoadingFaucet && <Loading />}
                                 {!isLoadingFaucet && !!faucetRequestError && <span className='text-red-700'>{faucetRequestError}</span>}
                                 {!isLoadingFaucet && !!faucetTransactionId &&
-                                    <a href={`${SEPOLIA_ETHERSCAN}${faucetTransactionId}`} target="_blank">
-                                        <span className={`flex flex-rol justify-center items-center`}>
-                                            <span>TX: {faucetTransactionId.slice(0, 15)}...</span>
-                                            <TbHandFinger />
-                                        </span>
-                                    </a>}
+                                    <EtherscanLink
+                                        id={faucetTransactionId}
+                                        network={currentNetwork}
+                                        type={"transaction"}
+                                    />
+                                }
                                 {!isLoadingFaucet && !faucetTransactionId?.length && !faucetRequestError?.length &&
                                     <button onClick={handleConfirmBtn} disabled={!!isLoadingFaucet}>
                                         Get Token

@@ -1,12 +1,11 @@
 
 'use client'
 import React, { useEffect, useState } from 'react';
-import { TbHandFinger } from "react-icons/tb";
 import { useStateContext } from '@/contexts';
 import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
-import { SEPOLIA_ETHERSCAN } from '@/constants/utils';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
+import EtherscanLink from '../shared/EtherscanLink/EtherscanLink';
 
 export default function BasicTransfer() {
     const {
@@ -22,7 +21,8 @@ export default function BasicTransfer() {
         setIsLoadingTransferToken,
         setTransferTokenError,
         transferCoin, transferToken, connectWalletHandler,
-        selectedToken, setSelectedToken
+        selectedToken, setSelectedToken,
+        currentNetwork
     } = useStateContext();
 
     function handleTransferBtn() {
@@ -93,12 +93,13 @@ export default function BasicTransfer() {
                         </div>
                         <div className='flex flex-col'>
                             {!isLoadingTransferToken && !!transferTokenError && <span className='text-red-700'>{transferTokenError}</span>}
-                            {!isLoadingTransferToken && !!transferTokenId && <a href={`${SEPOLIA_ETHERSCAN}${transferTokenId}`} target="_blank">
-                                <span className={`flex flex-rol justify-center items-center`}>
-                                    <span>TX: {transferTokenId.slice(0, 15)}...</span>
-                                    <TbHandFinger />
-                                </span>
-                            </a>}
+                            {!isLoadingTransferToken && !!transferTokenId &&
+                                <EtherscanLink
+                                    id={transferTokenId}
+                                    network={currentNetwork}
+                                    type={"transaction"}
+                                />
+                            }
                             <button onClick={handleTransferBtn} disabled={!!isLoadingTransferToken}>
                                 Confirm
                             </button>
