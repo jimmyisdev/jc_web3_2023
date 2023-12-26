@@ -12,5 +12,4 @@ function EtherscanLink({ id, type, network }: { id: string, type: string, networ
         </a>
     )
 }
-
 export default EtherscanLink

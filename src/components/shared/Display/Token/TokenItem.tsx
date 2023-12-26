@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { VscTriangleDown, VscTriangleUp } from "react-icons/vsc";
 import { useStateContext } from '@/contexts';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface'

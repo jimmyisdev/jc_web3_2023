@@ -1,16 +1,16 @@
 'use client'
+import { useEffect } from "react";
+import Image from "next/image";
+import Marquee from "react-fast-marquee";
+import { useStateContext } from '@/contexts';
 import BasicInfo from "@/components/basicInfo/BasicInfo";
 import CurrentPrice from "@/components/currentPrice/CurrentPrice";
 import JverseAsset from "@/components/jverseAsset/JverseAsset";
 import NoWallet from "@/components/shared/NoWallet/NoWallet";
-import { useStateContext } from '@/contexts';
 import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
-import Image from "next/image";
-import { relevantsLogo } from "@/constants/utils";
-import Marquee from "react-fast-marquee";
 import JverseFaucet from "@/components/jverseFaucet/JverseFaucet";
-import { useEffect } from "react";
+import { relevantsLogo } from "@/constants/utils";
 
 export default function Home() {
   const { connectErrorMsg, connectWalletHandler } = useStateContext();

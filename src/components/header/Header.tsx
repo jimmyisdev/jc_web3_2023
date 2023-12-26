@@ -1,9 +1,8 @@
 'use client'
 import { useStateContext } from '@/contexts';
 import Image from 'next/image';
-import { FaWallet } from "react-icons/fa6";
 export default function Header() {
-    const { currentNetwork, connectWalletHandler } = useStateContext();
+    const { currentNetwork } = useStateContext();
     return (
         <div className='relative text-center  flex flex-wrap justify-between p-3 align-middle'>
             <div className=' flex flex-row items-center'>

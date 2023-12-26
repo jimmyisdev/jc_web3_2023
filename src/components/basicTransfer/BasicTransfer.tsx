@@ -26,6 +26,7 @@ export default function BasicTransfer() {
     } = useStateContext();
 
     function handleTransferBtn() {
+        if (selectedToken === '') return setTransferTokenError("Select token")
         let data: ERC20TOKEN | undefined = userTokens.find((item: ERC20TOKEN) => item.name === selectedToken)
         if (!!data) {
             if (transferVal > data.tokenBalance || transferVal <= 0) {
@@ -33,7 +34,6 @@ export default function BasicTransfer() {
             } else if (!receiver?.length) {
                 return setTransferTokenError("Please check your receiver field")
             }
-            // connectWalletHandler()
             setIsLoadingTransferToken(true)
             transferToken(data.decimals, data.tokenAddress)
         }
@@ -44,14 +44,6 @@ export default function BasicTransfer() {
         setReceiver('')
         setTransferVal(0)
     }, [])
-    useEffect(() => {
-        if (!!transferTokenId) {
-            setTransferTokenError('')
-            setReceiver('')
-            setTransferVal(0)
-        }
-    }, [transferTokenId])
-
 
     return (
         <Box>
@@ -59,18 +51,16 @@ export default function BasicTransfer() {
                 <BoxHeader headerText={`Transfer Token`} />
                 {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
                     <div className='h-52 overflow-scroll '>
-                        {/* <div className='flex flex-col mb-2'>
-                            <span >FROM</span>
-                            <span>{`${sender.slice(0, 25)}.....`}</span>
-                        </div> */}
                         <div className='w-full mb-3 flex flex-col'>
                             <label className='font-bold mb-1'>Select Token</label>
                             <select
                                 className='text-blue-900'
                                 onChange={(e) => setSelectedToken(e.target.value)}>
-                                {userTokens.filter((item: ERC20TOKEN) => item.tokenBalance > 0).map(item => {
+                                <option value=''>Select Token</option>
+                                {userTokens.filter((item: ERC20TOKEN) => item.tokenBalance > 0).map((item, index) => {
                                     return (
-                                        <option key={item.tokenAddress} value={item.name}>{item.symbol}</option>
+                                        <option key={item.tokenAddress}
+                                            value={item.name}>{item.symbol}</option>
                                     )
                                 })}
                             </select>
