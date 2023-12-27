@@ -5,8 +5,9 @@ import { useStateContext } from '@/contexts';
 import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
-import EtherscanLink from '../shared/EtherscanLink/EtherscanLink';
-import Loading from '../shared/Loading/Loading';
+import EtherscanLink from '../shared/Display/EtherscanLink/EtherscanLink';
+import Loading from '../shared/Display/Loading/Loading';
+import ErrorMsg from '../shared/Display/ErrorMsg/ErrorMsg';
 
 export default function BasicTransfer() {
     const {
@@ -26,13 +27,13 @@ export default function BasicTransfer() {
         setTransferAssetId('')
         setIsLoadingTransferAsset(true)
         if (selectedAsset === '') {
-            setTransferAssetError("Select token")
+            setTransferAssetError("Select transfer asset!")
             return setIsLoadingTransferAsset(false)
         } else if (transferVal <= 0) {
-            setTransferAssetError("Transfer value is invalid")
+            setTransferAssetError("Transfer value is invalid!")
             return setIsLoadingTransferAsset(false)
         } else if (!receiver?.length) {
-            setTransferAssetError("Please check your receiver field")
+            setTransferAssetError("Please check your receiver field!")
             return setIsLoadingTransferAsset(false)
         }
         if (selectedAsset === 'ETH') {
@@ -65,7 +66,6 @@ export default function BasicTransfer() {
             <div className='flex flex-col min-h-full align-center'>
                 <BoxHeader headerText={`Transfer ${selectedAsset}`} />
                 {!!isLoadingTransferAsset && <Loading />}
-                {!isLoadingTransferAsset && !!transferAssetError && <span className='text-red-700'>{transferAssetError}</span>}
                 {!isLoadingTransferAsset && currentConnectedAccounts.length === 0 && <span>Please connect MetaMask</span>}
                 {!isLoadingTransferAsset && currentConnectedAccounts.length !== 0 && <div className='h-52 overflow-scroll '>
                     <div className='w-full mb-3 flex flex-col'>
@@ -83,14 +83,14 @@ export default function BasicTransfer() {
                         </select>
                     </div>
                     <div className='flex flex-col mb-2'>
-                        <span>TO</span>
+                        <span className='font-bold'>TO</span>
                         <input
                             value={receiver}
                             className={`p-1 bg-transparent border-b-2 border-blue-300   focus:border-blue-500 `}
                             onChange={e => setReceiver(e.target.value)} />
                     </div>
                     <div className='flex flex-col mb-2'>
-                        <span>VALUE</span>
+                        <span className='font-bold'>VALUE</span>
                         <input
                             className={`p-1 bg-transparent border-b-2 border-blue-300   focus:border-blue-500 `}
                             type='number'
@@ -98,6 +98,9 @@ export default function BasicTransfer() {
                             onChange={e => setTransferVal(Number(e.target.value))}
                         />
                     </div>
+                    {!isLoadingTransferAsset && !!transferAssetError &&
+                        <ErrorMsg errMsg={transferAssetError} />
+                    }
                     {!!transferAssetId &&
                         <EtherscanLink
                             id={transferAssetId}
@@ -106,7 +109,7 @@ export default function BasicTransfer() {
                         />
                     }
                     <div className='flex flex-col'>
-                        <button onClick={handleTransferBtn} disabled={!!isLoadingTransferAsset}>
+                        <button className='font-bold hover:font-black duration-300' onClick={handleTransferBtn} disabled={!!isLoadingTransferAsset}>
                             Confirm
                         </button>
                     </div>

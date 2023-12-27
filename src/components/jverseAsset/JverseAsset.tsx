@@ -2,7 +2,7 @@
 import Box from '../shared/Box/Box'
 import BoxHeader from '../shared/Box/BoxHeader'
 import { useStateContext } from '@/contexts';
-import Loading from '../shared/Loading/Loading';
+import Loading from '../shared/Display/Loading/Loading';
 import TokenItem from '../shared/Display/Token/TokenItem';
 export default function JverseAsset() {
     const {

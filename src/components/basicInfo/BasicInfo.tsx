@@ -4,7 +4,7 @@ import { SiEthereum } from "react-icons/si";
 import Box from '../shared/Box/Box'
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
-import Loading from '../shared/Loading/Loading';
+import Loading from '../shared/Display/Loading/Loading';
 import TokenItem from '../shared/Display/Token/TokenItem';
 
 export default function BasicInfo() {
@@ -34,7 +34,8 @@ export default function BasicInfo() {
         <Box>
             <div >
                 <BoxHeader headerText={`Asset Info`} />
-                {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
+                {currentConnectedAccounts.length === 0 && <span>Please connect MetaMask</span>}
+                {currentConnectedAccounts.length !== 0 && (
                     <div className='h-52 overflow-scroll '>
                         <div className='p-1 mb-2 '>
                             <h1 className='mb-1 font-bold'>Current Address </h1>
@@ -65,7 +66,10 @@ export default function BasicInfo() {
                             )}
                         </div>
                     </div>
-                }
+
+                )}
+
+
             </div >
         </Box >
     )

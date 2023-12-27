@@ -1,8 +1,10 @@
 'use client'
 import { useStateContext } from '@/contexts';
 import Image from 'next/image';
+import { FaWallet } from "react-icons/fa6";
+
 export default function Header() {
-    const { currentNetwork } = useStateContext();
+    const { currentNetwork, connectWalletHandler } = useStateContext();
     return (
         <div className='relative text-center  flex flex-wrap justify-between p-3 align-middle'>
             <div className=' flex flex-row items-center'>
@@ -11,6 +13,9 @@ export default function Header() {
                     <span>Current Network</span>
                     <span className='font-bold'>{!!currentNetwork?.length && `[${currentNetwork.toUpperCase()}]`}</span>
                 </div>
+                <button title="Connect MetaMask" className="absolute right-6 top-6" onClick={connectWalletHandler}>
+                    <FaWallet size={30} />
+                </button>
             </div>
         </div>
     )

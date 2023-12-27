@@ -45,10 +45,10 @@ interface stateContextValue {
     //accounts, sender, receiver, transfer-----------------
     currentConnectedAccounts: string[];
     setCurrentConnectedAccounts: React.Dispatch<React.SetStateAction<string[]>>,
-    sender: string | undefined;
-    setSender: React.Dispatch<React.SetStateAction<string | undefined>>,
-    receiver: string | undefined;
-    setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>,
+    sender: string;
+    setSender: React.Dispatch<React.SetStateAction<string>>,
+    receiver: string;
+    setReceiver: React.Dispatch<React.SetStateAction<string>>,
     transferVal: number;
     setTransferVal: React.Dispatch<React.SetStateAction<number>>,
     //-----trasnfer token/coin
@@ -87,8 +87,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     //accounts, sender, receiver, transfer-----------------
     const [currentConnectedAccounts, setCurrentConnectedAccounts] = useState<string[]>([]);
-    const [sender, setSender] = useState<string | undefined>('');
-    const [receiver, setReceiver] = useState<string | undefined>('');
+    const [sender, setSender] = useState<string>('');
+    const [receiver, setReceiver] = useState<string>('');
     const [transferVal, setTransferVal] = useState<number>(0);
     const [isLoadingTransferAsset, setIsLoadingTransferAsset] = useState(false);
     const [transferAssetError, setTransferAssetError] = useState<string>('');
