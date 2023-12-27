@@ -33,7 +33,7 @@ export default function Home() {
           {relevantsLogo.map(item => {
             return (
               <div key={item} className="flex flex-col items-center justify-center m-5">
-                <Image src={`/${item}.png`} height={300} width={300} alt={item} className="z-5" />
+                <Image src={`/${item}.png`} height={300} width={300} alt={item} className="z-5 h-auto w-auto" />
               </div>
             )
           })}

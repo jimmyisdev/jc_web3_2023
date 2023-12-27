@@ -1,7 +1,7 @@
 "use client"
 import { Alchemy, Network } from 'alchemy-sdk';
 import React, { createContext, useState } from 'react';
-import { ethers, formatUnits, parseUnits } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
@@ -73,11 +73,12 @@ interface stateContextValue {
     faucetTransactionId: string | undefined,
     setFaucetTransactionId: React.Dispatch<React.SetStateAction<string | undefined>>,
     //-----------------faucet function
+
+    assignCurrentAddress: () => {}
 }
 const StateContext = createContext<stateContextValue | undefined>(undefined);
 
 const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY || "";
     const Alchemy_API_KEY = process.env.NEXT_PUBLIC_Alchemy_API_KEY || "";
     //control network-----------------
     const [currentNetwork, setCurrentNetwork] = useState<string>("sepolia");
@@ -154,6 +155,11 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             }
         }
     }
+    async function assignCurrentAddress() {
+        const ethereum = window.ethereum as MetaMaskInpageProvider;
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        let signer = await provider.getSigner()
+    }
 
     async function getErc20TokenBalance() {
         if (sender) {
@@ -209,8 +215,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
     async function requestFaucetForToken() {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
         try {
+            const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
             const tx = await faucetContract.requestTokens()
             setFaucetTransactionId(tx.hash)
             await tx.wait()
@@ -229,12 +235,12 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const signer = await provider.getSigner()
             const limit: bigint = await provider.estimateGas({
-                from: sender,
+                from: signer.getAddress(),
                 to: receiver,
                 value: parseUnits(String(transferVal), 'ether')
             });
             const tx = await signer.sendTransaction({
-                from: sender,
+                from: signer.getAddress(),
                 to: receiver,
                 value: parseUnits(String(transferVal), 'ether'),
                 gasLimit: limit,
@@ -250,6 +256,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         }
         setIsLoadingTransferAsset(false)
     }
+
     async function transferToken(decimals: number, tokenAddress: string) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         try {
@@ -281,6 +288,7 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 getAlchemyNetwork,
                 connectErrorMsg,
                 setConnectErrorMsg,
+
                 //get ether balance and token
                 getUserBalance,
                 isLoadingBalance,
@@ -305,10 +313,10 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setTransferVal,
 
                 //transfer token/ coin
-                selectedAsset,
-                setSelectedAsset,
                 transferCoin,
                 transferToken,
+                selectedAsset,
+                setSelectedAsset,
                 transferAssetId,
                 setTransferAssetId,
                 transferAssetError,
@@ -322,8 +330,10 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setIsLoadingFaucet,
                 faucetRequestError,
                 setFaucetRequestError,
-                setFaucetTransactionId,
                 faucetTransactionId,
+                setFaucetTransactionId,
+
+                assignCurrentAddress
             }}
         >
             {children}
