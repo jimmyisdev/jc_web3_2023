@@ -1,9 +1,9 @@
 'use client'
 import { useEffect } from 'react'
+import { SiEthereum } from "react-icons/si";
 import Box from '../shared/Box/Box'
 import { useStateContext } from '@/contexts';
 import BoxHeader from '../shared/Box/BoxHeader';
-import { SiEthereum } from "react-icons/si";
 import Loading from '../shared/Loading/Loading';
 import TokenItem from '../shared/Display/Token/TokenItem';
 
@@ -68,6 +68,5 @@ export default function BasicInfo() {
                 }
             </div >
         </Box >
-
     )
 }

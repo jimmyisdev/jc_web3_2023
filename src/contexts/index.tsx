@@ -210,12 +210,14 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     async function requestFaucetForToken() {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const faucetContract = new ethers.Contract(TOKEN_FAUCET_ADDRESS[0].faucet_address, FAUCET_ABI, await provider.getSigner())
-        setIsLoadingFaucet(true)
-        setFaucetRequestError('')
         try {
             const tx = await faucetContract.requestTokens()
             setFaucetTransactionId(tx.hash)
-            await tx.wait();
+            await tx.wait()
+                .then(() => {
+                    getUserBalance()
+                    getErc20TokenBalance()
+                })
         } catch (error) {
             setFaucetRequestError("Failed to request tokens")
             console.log(error)
@@ -240,9 +242,8 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 maxPriorityFeePerGas: parseUnits("1", "gwei"),
             });
             setTransferAssetId(tx.hash)
-
-            console.log(tx)
-            await tx.wait();
+            await tx.wait()
+                .then(() => getUserBalance())
         } catch (error) {
             console.log(error)
             setTransferAssetError("Transfer ETH failed")
@@ -256,8 +257,11 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
             const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, await provider.getSigner())
             const tx = await tokenContract.transfer(receiver, BigInt(val))
             setTransferAssetId(tx.hash)
-            console.log(tx)
-            await tx.wait();
+            await tx.wait()
+                .then(() => {
+                    getUserBalance()
+                    getErc20TokenBalance()
+                })
         } catch (error) {
             console.log(error)
             setTransferAssetError("Transfer failed")

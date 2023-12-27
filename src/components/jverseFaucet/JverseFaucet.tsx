@@ -1,18 +1,15 @@
 
 'use client'
 import React, { useEffect } from 'react';
-import { TbHandFinger } from "react-icons/tb";
 import BoxHeader from '../shared/Box/BoxHeader';
 import Box from '../shared/Box/Box';
 import { useStateContext } from '@/contexts';
-import { SEPOLIA_ETHERSCAN } from '@/constants/utils';
 import Loading from '../shared/Loading/Loading';
 import EtherscanLink from '../shared/EtherscanLink/EtherscanLink';
 
 export default function JverseFaucet() {
     const {
         currentConnectedAccounts,
-        getErc20TokenBalance,
         currentNetwork,
         faucetTransactionId,
         requestFaucetForToken,
@@ -27,11 +24,8 @@ export default function JverseFaucet() {
     }
 
     useEffect(() => {
-        !!faucetTransactionId && getErc20TokenBalance()
-    }, [isLoadingFaucet])
-
-    useEffect(() => {
         setFaucetRequestError('')
+        setIsLoadingFaucet(false)
     }, [])
 
     return (

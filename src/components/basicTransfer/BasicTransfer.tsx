@@ -1,6 +1,6 @@
 
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useStateContext } from '@/contexts';
 import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
@@ -26,8 +26,6 @@ export default function BasicTransfer() {
         setSelectedAsset,
         currentNetwork,
         setTransferAssetId,
-        getUserBalance,
-        getErc20TokenBalance
     } = useStateContext();
 
     function handleTransferBtn() {
@@ -61,12 +59,6 @@ export default function BasicTransfer() {
             }
         }
     }
-    useEffect(() => {
-        if (transferAssetId) {
-            getUserBalance()
-            getErc20TokenBalance()
-        }
-    }, [transferAssetId])
 
     useEffect(() => {
         setTransferAssetError('')
