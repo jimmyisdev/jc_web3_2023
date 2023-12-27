@@ -6,6 +6,7 @@ import BoxHeader from '../shared/Box/BoxHeader';
 
 export default function SettingPanel() {
     const { sender, currentNetwork, setCurrentNetwork, currentConnectedAccounts, setSender } = useStateContext();
+
     return (
         <Box>
             <div>

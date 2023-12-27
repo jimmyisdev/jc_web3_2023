@@ -1,7 +1,7 @@
 "use client"
-import { Alchemy, Network, Wallet, Utils } from 'alchemy-sdk';
+import { Alchemy, Network } from 'alchemy-sdk';
 import React, { createContext, useState } from 'react';
-import { ethers, formatUnits, parseUnits, toBigInt } from 'ethers';
+import { ethers, formatUnits, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
@@ -27,18 +27,6 @@ interface stateContextValue {
     getAlchemyNetwork: () => void,
     //-----------------control network
 
-    //accounts, sender, receiver, transfer-----------------
-    currentConnectedAccounts: string[];
-    setCurrentConnectedAccounts: React.Dispatch<React.SetStateAction<string[]>>,
-    sender: string | undefined;
-    setSender: React.Dispatch<React.SetStateAction<string | undefined>>,
-    receiver: string | undefined;
-    setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>,
-    transferVal: number;
-    setTransferVal: React.Dispatch<React.SetStateAction<number>>,
-    transferCoin: () => {},
-    //accounts, sender, receiver, transfer-----------------
-
     //get ether balance and token-----------------
     //-----balance
     getUserBalance: () => {},
@@ -48,20 +36,33 @@ interface stateContextValue {
     getUserBalanceErrorMsg: string | null;
     //-----token
     getErc20TokenBalance: () => {},
+    isLoadingToken: Boolean,
     userTokens: ERC20TOKEN[],
     setUserTokens: React.Dispatch<React.SetStateAction<ERC20TOKEN[]>>,
-    isLoadingToken: Boolean,
     getTokenErrorMsg: string | null;
-    transferToken: (decimals: number, tokenAddress: string) => {},
-    isLoadingTransferToken: Boolean,
-    setIsLoadingTransferToken: React.Dispatch<React.SetStateAction<boolean>>,
-    transferTokenError: string | null;
-    setTransferTokenError: React.Dispatch<React.SetStateAction<string>>,
-    transferTokenId: string | undefined,
-    setTransferTokenId: React.Dispatch<React.SetStateAction<string | undefined>>,
-    selectedToken: string,
-    setSelectedToken: React.Dispatch<React.SetStateAction<string>>,
     //-----------------get ether balance and token
+
+    //accounts, sender, receiver, transfer-----------------
+    currentConnectedAccounts: string[];
+    setCurrentConnectedAccounts: React.Dispatch<React.SetStateAction<string[]>>,
+    sender: string | undefined;
+    setSender: React.Dispatch<React.SetStateAction<string | undefined>>,
+    receiver: string | undefined;
+    setReceiver: React.Dispatch<React.SetStateAction<string | undefined>>,
+    transferVal: number;
+    setTransferVal: React.Dispatch<React.SetStateAction<number>>,
+    //-----trasnfer token/coin
+    transferCoin: () => {},
+    transferToken: (decimals: number, tokenAddress: string) => {},
+    isLoadingTransferAsset: Boolean,
+    setIsLoadingTransferAsset: React.Dispatch<React.SetStateAction<boolean>>,
+    transferAssetError: string | null;
+    setTransferAssetError: React.Dispatch<React.SetStateAction<string>>,
+    transferAssetId: string | undefined,
+    setTransferAssetId: React.Dispatch<React.SetStateAction<string | undefined>>,
+    selectedAsset: string,
+    setSelectedAsset: React.Dispatch<React.SetStateAction<string>>,
+    //accounts, sender, receiver, transfer-----------------
 
     //faucet function-----------------
     requestFaucetForToken: () => {}
@@ -88,10 +89,10 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [sender, setSender] = useState<string | undefined>('');
     const [receiver, setReceiver] = useState<string | undefined>('');
     const [transferVal, setTransferVal] = useState<number>(0);
-    const [isLoadingTransferToken, setIsLoadingTransferToken] = useState(false);
-    const [transferTokenError, setTransferTokenError] = useState<string>('');
-    const [transferTokenId, setTransferTokenId] = useState<string | undefined>('');
-    const [selectedToken, setSelectedToken] = useState('');
+    const [isLoadingTransferAsset, setIsLoadingTransferAsset] = useState(false);
+    const [transferAssetError, setTransferAssetError] = useState<string>('');
+    const [transferAssetId, setTransferAssetId] = useState<string | undefined>('');
+    const [selectedAsset, setSelectedAsset] = useState('');
 
     //get ether balance and token-----------------
     const [userBalance, setUserBalance] = useState<string | undefined>('0');
@@ -223,27 +224,45 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
     async function transferCoin() {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner()
-        const data = [{
-            from: sender,
-            to: receiver,
-            // value: ethers.utils.parseUnits(strEther, 'ether').toHexString()
-        }];
-    }
-    async function transferToken(decimals: number, tokenAddress: string) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const val = Number(`${transferVal}e${decimals}`)
-        const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, await provider.getSigner())
         try {
-            const tx = await tokenContract.transfer(receiver, BigInt(val))
-            setTransferTokenId(tx.hash)
+            const signer = await provider.getSigner()
+            const limit: bigint = await provider.estimateGas({
+                from: sender,
+                to: receiver,
+                value: parseUnits(String(transferVal), 'ether')
+            });
+            const tx = await signer.sendTransaction({
+                from: sender,
+                to: receiver,
+                value: parseUnits(String(transferVal), 'ether'),
+                gasLimit: limit,
+                nonce: await signer.getNonce(),
+                maxPriorityFeePerGas: parseUnits("1", "gwei"),
+            });
+            setTransferAssetId(tx.hash)
+
             console.log(tx)
             await tx.wait();
         } catch (error) {
             console.log(error)
-            setTransferTokenError("Transfer failed")
+            setTransferAssetError("Transfer ETH failed")
         }
-        setIsLoadingTransferToken(false)
+        setIsLoadingTransferAsset(false)
+    }
+    async function transferToken(decimals: number, tokenAddress: string) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        try {
+            const val = Number(`${transferVal}e${decimals}`)
+            const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, await provider.getSigner())
+            const tx = await tokenContract.transfer(receiver, BigInt(val))
+            setTransferAssetId(tx.hash)
+            console.log(tx)
+            await tx.wait();
+        } catch (error) {
+            console.log(error)
+            setTransferAssetError("Transfer failed")
+        }
+        setIsLoadingTransferAsset(false)
     }
 
     return (
@@ -280,18 +299,18 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 setReceiver,
                 transferVal,
                 setTransferVal,
-                transferCoin,
 
-                //transfer token
-                selectedToken,
-                setSelectedToken,
+                //transfer token/ coin
+                selectedAsset,
+                setSelectedAsset,
+                transferCoin,
                 transferToken,
-                transferTokenId,
-                setTransferTokenId,
-                transferTokenError,
-                setTransferTokenError,
-                isLoadingTransferToken,
-                setIsLoadingTransferToken,
+                transferAssetId,
+                setTransferAssetId,
+                transferAssetError,
+                setTransferAssetError,
+                isLoadingTransferAsset,
+                setIsLoadingTransferAsset,
 
                 //faucet function
                 requestFaucetForToken,

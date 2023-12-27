@@ -44,17 +44,17 @@ export default function JverseFaucet() {
                         <div className='flex flex-col mb-2 text-center'>
                             <h1 className='mb-1 font-bold'>Free JVT23 token</h1>
                         </div>
+                        {!!isLoadingFaucet && <Loading />}
+                        {!isLoadingFaucet && !!faucetRequestError && <span className='text-red-700'>{faucetRequestError}</span>}
+                        {!isLoadingFaucet && !!faucetTransactionId &&
+                            <EtherscanLink
+                                id={faucetTransactionId}
+                                network={currentNetwork}
+                                type={"transaction"}
+                            />
+                        }
                         {!!currentConnectedAccounts?.length &&
                             <div className={`flex flex-col `}>
-                                {!!isLoadingFaucet && <Loading />}
-                                {!isLoadingFaucet && !!faucetRequestError && <span className='text-red-700'>{faucetRequestError}</span>}
-                                {!isLoadingFaucet && !!faucetTransactionId &&
-                                    <EtherscanLink
-                                        id={faucetTransactionId}
-                                        network={currentNetwork}
-                                        type={"transaction"}
-                                    />
-                                }
                                 {!isLoadingFaucet && !faucetTransactionId?.length && !faucetRequestError?.length &&
                                     <button onClick={handleConfirmBtn} disabled={!!isLoadingFaucet}>
                                         Get Token

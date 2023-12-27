@@ -64,9 +64,6 @@ export default function BasicInfo() {
                                 <span>{getTokenErrorMsg}</span>
                             )}
                         </div>
-                        {/* <div className='p-1 mb-2 '>
-                            <h1 className='mb-1 font-bold'>NFT - ERC721 </h1>
-                        </div> */}
                     </div>
                 }
             </div >

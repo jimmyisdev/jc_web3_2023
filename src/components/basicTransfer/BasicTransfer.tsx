@@ -6,41 +6,71 @@ import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
 import { ERC20TOKEN } from '@/interfaces/contracts_interface';
 import EtherscanLink from '../shared/EtherscanLink/EtherscanLink';
+import Loading from '../shared/Loading/Loading';
 
 export default function BasicTransfer() {
     const {
         userTokens,
         transferVal,
-        setTransferVal,
+        setTransferVal, userBalance,
         sender, setSender,
         receiver, setReceiver,
         currentConnectedAccounts,
-        transferTokenId,
-        transferTokenError,
-        isLoadingTransferToken,
-        setIsLoadingTransferToken,
-        setTransferTokenError,
+        transferAssetId,
+        transferAssetError,
+        isLoadingTransferAsset,
+        setIsLoadingTransferAsset,
+        setTransferAssetError,
         transferCoin, transferToken, connectWalletHandler,
-        selectedToken, setSelectedToken,
-        currentNetwork
+        selectedAsset,
+        setSelectedAsset,
+        currentNetwork,
+        setTransferAssetId,
+        getUserBalance,
+        getErc20TokenBalance
     } = useStateContext();
 
     function handleTransferBtn() {
-        if (selectedToken === '') return setTransferTokenError("Select token")
-        let data: ERC20TOKEN | undefined = userTokens.find((item: ERC20TOKEN) => item.name === selectedToken)
-        if (!!data) {
-            if (transferVal > data.tokenBalance || transferVal <= 0) {
-                return setTransferTokenError("Transfer value is invalid")
-            } else if (!receiver?.length) {
-                return setTransferTokenError("Please check your receiver field")
+        setTransferAssetError('')
+        setTransferAssetId('')
+        setIsLoadingTransferAsset(true)
+        if (selectedAsset === '') {
+            setTransferAssetError("Select token")
+            return setIsLoadingTransferAsset(false)
+        } else if (transferVal <= 0) {
+            setTransferAssetError("Transfer value is invalid")
+            return setIsLoadingTransferAsset(false)
+        } else if (!receiver?.length) {
+            setTransferAssetError("Please check your receiver field")
+            return setIsLoadingTransferAsset(false)
+        }
+        if (selectedAsset === 'ETH') {
+            if (transferVal > Number(userBalance)) {
+                setTransferAssetError("Transfer value is invalid")
+                return setIsLoadingTransferAsset(false)
             }
-            setIsLoadingTransferToken(true)
-            transferToken(data.decimals, data.tokenAddress)
+            return transferCoin()
+        } else {
+            let data: ERC20TOKEN | undefined = userTokens.find((item: ERC20TOKEN) => item.symbol === selectedAsset)
+            if (!!data) {
+                if (transferVal > data.tokenBalance) {
+                    setTransferAssetError("Transfer value is invalid")
+                    return setIsLoadingTransferAsset(false)
+                }
+                return transferToken(data.decimals, data.tokenAddress)
+            }
         }
     }
     useEffect(() => {
-        setTransferTokenError('')
-        setIsLoadingTransferToken(false)
+        if (transferAssetId) {
+            getUserBalance()
+            getErc20TokenBalance()
+        }
+    }, [transferAssetId])
+
+    useEffect(() => {
+        setTransferAssetError('')
+        setIsLoadingTransferAsset(false)
         setReceiver('')
         setTransferVal(0)
     }, [])
@@ -48,19 +78,19 @@ export default function BasicTransfer() {
     return (
         <Box>
             <div className='flex flex-col min-h-full align-center'>
-                <BoxHeader headerText={`Transfer Token`} />
+                <BoxHeader headerText={`Transfer ${selectedAsset}`} />
                 {(currentConnectedAccounts.length === 0 || sender === undefined) ? <span>Please connect MetaMask</span> :
                     <div className='h-52 overflow-scroll '>
                         <div className='w-full mb-3 flex flex-col'>
-                            <label className='font-bold mb-1'>Select Token</label>
                             <select
                                 className='text-blue-900'
-                                onChange={(e) => setSelectedToken(e.target.value)}>
-                                <option value=''>Select Token</option>
+                                onChange={(e) => setSelectedAsset(e.target.value)}>
+                                <option value=''>Select transfer asset</option>
+                                <option value='ETH'>ETH</option>
                                 {userTokens.filter((item: ERC20TOKEN) => item.tokenBalance > 0).map((item, index) => {
                                     return (
                                         <option key={item.tokenAddress}
-                                            value={item.name}>{item.symbol}</option>
+                                            value={item.symbol}>{item.symbol}</option>
                                     )
                                 })}
                             </select>
@@ -81,17 +111,17 @@ export default function BasicTransfer() {
                                 onChange={e => setTransferVal(Number(e.target.value))}
                             />
                         </div>
+                        {!isLoadingTransferAsset && !!transferAssetError && <span className='text-red-700'>{transferAssetError}</span>}
+                        {!isLoadingTransferAsset && !!transferAssetId &&
+                            <EtherscanLink
+                                id={transferAssetId}
+                                network={currentNetwork}
+                                type={"transaction"}
+                            />
+                        }
                         <div className='flex flex-col'>
-                            {!isLoadingTransferToken && !!transferTokenError && <span className='text-red-700'>{transferTokenError}</span>}
-                            {!isLoadingTransferToken && !!transferTokenId &&
-                                <EtherscanLink
-                                    id={transferTokenId}
-                                    network={currentNetwork}
-                                    type={"transaction"}
-                                />
-                            }
-                            <button onClick={handleTransferBtn} disabled={!!isLoadingTransferToken}>
-                                Confirm
+                            <button onClick={handleTransferBtn} disabled={!!isLoadingTransferAsset}>
+                                {isLoadingTransferAsset ? <Loading /> : "Confirm"}
                             </button>
                         </div>
                     </div>
