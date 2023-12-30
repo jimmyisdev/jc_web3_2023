@@ -14,9 +14,9 @@ class Socket {
             this.socket = null;
         }
     }
-    on(eventName: string, callback: (event: Event) => void): void {
+    on(eventName: string, callback: (event: MessageEvent) => void): void {
         if (this.socket) {
-            this.socket.addEventListener(eventName, callback);
+            this.socket.addEventListener(eventName, callback as EventListener);
         }
     }
 }

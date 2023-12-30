@@ -94,6 +94,7 @@ export default function BasicTransfer() {
                         <input
                             className={`p-1 bg-transparent border-b-2 border-blue-300   focus:border-blue-500 `}
                             type='number'
+
                             value={transferVal}
                             onChange={e => setTransferVal(Number(e.target.value))}
                         />

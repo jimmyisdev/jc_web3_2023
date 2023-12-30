@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useTransition } from 'react'
 import { SiBinance } from "react-icons/si";
 import Box from '../shared/Box/Box'
 import BoxHeader from '../shared/Box/BoxHeader';
@@ -8,22 +8,26 @@ import TradeDisplay from './TradeDisplay';
 
 export default function CurrentPrice() {
     const { connectSocket, processSocketData, ethSingleTransaction, setEthSingleTransaction, btcSingleTransaction, setBtcSingleTransaction } = useSocketsContext();
-    useEffect(() => {
+    function connectSocketMsg() {
         try {
             let btcusdcSocket = connectSocket("btcusdc")
             let ethusdcSocket = connectSocket("ethusdc")
-            btcusdcSocket.on("message", (event: any) => {
+            btcusdcSocket.on("message", (event: MessageEvent) => {
                 let data = JSON.parse(event.data);
                 processSocketData(data, setBtcSingleTransaction)
 
             })
-            ethusdcSocket.on("message", (event: any) => {
+            ethusdcSocket.on("message", (event: MessageEvent) => {
                 let data = JSON.parse(event.data);
                 processSocketData(data, setEthSingleTransaction)
             })
         } catch (error) {
             console.log(error)
         }
+    }
+
+    useEffect(() => {
+        connectSocketMsg()
     }, []);
     return (
         <Box>

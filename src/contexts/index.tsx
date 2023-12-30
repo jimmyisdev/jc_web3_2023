@@ -146,12 +146,12 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                         let balance = result;
                         const formatedBalance = ethers.formatEther(balance);
                         setUserBalance(formatedBalance)
-                        setIsLoadingBalance(false)
                     })
             } catch (error) {
                 setGetUserBalanceErrorMsg("Failed to get balance")
-                setIsLoadingBalance(false)
                 console.log(error)
+            } finally {
+                setIsLoadingBalance(false)
             }
         }
     }
@@ -193,13 +193,15 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                                     tokenData.logo = metadata.logo ? metadata.logo : '';
                                     tokenData.name = metadata.name ? metadata.name : '';
                                     tokenData.symbol = metadata.symbol ? metadata.symbol : '';
-                                }).then(() => {
+                                })
+                                .then(() => {
                                     setUserTokens(prevArray => [...prevArray, tokenData])
-                                    setIsLoadingToken(false)
                                 })
                                 .catch(e => {
                                     let error: ProviderRpcError = e;
                                     setGetTokenErrorMsg(error.message)
+                                })
+                                .finally(() => {
                                     setIsLoadingToken(false)
                                 })
                         }
@@ -208,8 +210,10 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
                 .catch(e => {
                     let error: ProviderRpcError = e;
                     setGetTokenErrorMsg(error.message)
-                    setIsLoadingToken(false)
                     console.log(error)
+                })
+                .finally(() => {
+                    setIsLoadingToken(false)
                 })
         }
     }
@@ -227,34 +231,37 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
             setFaucetRequestError("Failed to request tokens")
             console.log(error)
+        } finally {
+            setIsLoadingFaucet(false)
         }
-        setIsLoadingFaucet(false)
     }
     async function transferCoin() {
         const provider = new ethers.BrowserProvider(window.ethereum);
         try {
             const signer = await provider.getSigner()
+            const fromAddress = await signer.getAddress()
+            const processedVal = parseUnits(String(transferVal), 'ether')
             const limit: bigint = await provider.estimateGas({
-                from: signer.getAddress(),
+                from: fromAddress,
                 to: receiver,
-                value: parseUnits(String(transferVal), 'ether')
+                value: processedVal
             });
             const tx = await signer.sendTransaction({
-                from: signer.getAddress(),
+                from: fromAddress,
                 to: receiver,
-                value: parseUnits(String(transferVal), 'ether'),
+                value: processedVal,
                 gasLimit: limit,
                 nonce: await signer.getNonce(),
                 maxPriorityFeePerGas: parseUnits("1", "gwei"),
             });
             setTransferAssetId(tx.hash)
-            await tx.wait()
-                .then(() => getUserBalance())
+            await tx.wait().then(() => getUserBalance())
         } catch (error) {
             console.log(error)
             setTransferAssetError("Transfer ETH failed")
+        } finally {
+            setIsLoadingTransferAsset(false)
         }
-        setIsLoadingTransferAsset(false)
     }
 
     async function transferToken(decimals: number, tokenAddress: string) {
@@ -272,8 +279,9 @@ const StateContextProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
             console.log(error)
             setTransferAssetError("Transfer failed")
+        } finally {
+            setIsLoadingTransferAsset(false)
         }
-        setIsLoadingTransferAsset(false)
     }
 
     return (
