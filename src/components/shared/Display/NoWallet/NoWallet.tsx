@@ -1,5 +1,5 @@
 import React from 'react'
-import Box from '../Box/Box'
+import Box from '../../Box/Box'
 
 export default function NoWallet({ errMsg = "Error occured" }: { errMsg: string }) {
     return (

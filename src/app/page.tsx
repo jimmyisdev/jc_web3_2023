@@ -6,7 +6,7 @@ import { useStateContext } from '@/contexts';
 import BasicInfo from "@/components/basicInfo/BasicInfo";
 import CurrentPrice from "@/components/currentPrice/CurrentPrice";
 import JverseAsset from "@/components/jverseAsset/JverseAsset";
-import NoWallet from "@/components/shared/NoWallet/NoWallet";
+import NoWallet from "@/components/shared/Display/NoWallet/NoWallet";
 import BasicTransfer from "@/components/basicTransfer/BasicTransfer";
 import SettingPanel from "@/components/settingPanel/SettingPanel";
 import JverseFaucet from "@/components/jverseFaucet/JverseFaucet";

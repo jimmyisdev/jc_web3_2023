@@ -7,6 +7,7 @@ import { useStateContext } from '@/contexts';
 import Loading from '../shared/Display/Loading/Loading';
 import EtherscanLink from '../shared/Display/EtherscanLink/EtherscanLink';
 import ErrorMsg from '../shared/Display/ErrorMsg/ErrorMsg';
+import TextBtn from '../shared/Button/TextBtn';
 
 export default function JverseFaucet() {
     const {
@@ -52,9 +53,8 @@ export default function JverseFaucet() {
                                     />
                                 }
                                 {!isLoadingFaucet && !faucetTransactionId?.length && !faucetRequestError?.length &&
-                                    <button className='font-bold hover:font-black duration-300' onClick={handleConfirmBtn} disabled={!!isLoadingFaucet}>
-                                        Get Token
-                                    </button>}
+                                    <TextBtn handleBtn={handleConfirmBtn} disabledStatus={isLoadingFaucet} btnText="Get Token" />
+                                }
                             </div>}
                     </div>
                 )}

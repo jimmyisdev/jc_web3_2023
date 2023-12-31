@@ -8,6 +8,7 @@ import { ERC20TOKEN } from '@/interfaces/contracts_interface';
 import EtherscanLink from '../shared/Display/EtherscanLink/EtherscanLink';
 import Loading from '../shared/Display/Loading/Loading';
 import ErrorMsg from '../shared/Display/ErrorMsg/ErrorMsg';
+import TextBtn from '../shared/Button/TextBtn';
 
 export default function BasicTransfer() {
     const {
@@ -28,28 +29,34 @@ export default function BasicTransfer() {
         setIsLoadingTransferAsset(true)
         if (selectedAsset === '') {
             setTransferAssetError("Select transfer asset!")
-            return setIsLoadingTransferAsset(false)
+            setIsLoadingTransferAsset(false)
+            return
         } else if (transferVal <= 0) {
             setTransferAssetError("Transfer value is invalid!")
-            return setIsLoadingTransferAsset(false)
+            setIsLoadingTransferAsset(false)
+            return
         } else if (!receiver?.length) {
             setTransferAssetError("Please check your receiver field!")
-            return setIsLoadingTransferAsset(false)
+            setIsLoadingTransferAsset(false)
+            return
         }
         if (selectedAsset === 'ETH') {
             if (transferVal > Number(userBalance)) {
                 setTransferAssetError("Transfer value is invalid")
-                return setIsLoadingTransferAsset(false)
+                setIsLoadingTransferAsset(false)
             }
-            return transferCoin()
+            transferCoin()
+            return
         } else {
             let data: ERC20TOKEN | undefined = userTokens.find((item: ERC20TOKEN) => item.symbol === selectedAsset)
             if (!!data) {
                 if (transferVal > data.tokenBalance) {
                     setTransferAssetError("Transfer value is invalid")
-                    return setIsLoadingTransferAsset(false)
+                    setIsLoadingTransferAsset(false)
+                    return
                 }
-                return transferToken(data.decimals, data.tokenAddress)
+                transferToken(data.decimals, data.tokenAddress)
+                return
             }
         }
     }
@@ -100,26 +107,18 @@ export default function BasicTransfer() {
                         />
                     </div>
                     {!isLoadingTransferAsset && !!transferAssetError &&
-                        <ErrorMsg errMsg={transferAssetError} />
-                    }
+                        <ErrorMsg errMsg={transferAssetError} />}
                     {!!transferAssetId &&
                         <EtherscanLink
                             id={transferAssetId}
                             network={currentNetwork}
                             type={"transaction"}
-                        />
-                    }
+                        />}
                     <div className='flex flex-col'>
-                        <button className='font-bold hover:font-black duration-300' onClick={handleTransferBtn} disabled={!!isLoadingTransferAsset}>
-                            Confirm
-                        </button>
+                        <TextBtn handleBtn={handleTransferBtn} disabledStatus={isLoadingTransferAsset} btnText="Transfer" />
                     </div>
                 </div>
-
                 }
-
-
-
             </div>
         </Box>
     )
