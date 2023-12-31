@@ -4,7 +4,7 @@ import React, { createContext, useState } from 'react';
 import { ethers, parseUnits } from 'ethers';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { NETWORKS } from '@/constants/network';
-import { ERC20TOKEN } from '@/interfaces/contracts_interface';
+import { type ERC20TOKEN } from '@/interfaces/contracts_interface';
 import { ERC20_JVERSE_ADDRESSES, TOKEN_FAUCET_ADDRESS } from '@/constants/address/jverseAddress';
 import { ERC20ABI } from '@/constants/abi/contractABI';
 import { FAUCET_ABI } from '@/constants/abi/tokenFaucetABI';

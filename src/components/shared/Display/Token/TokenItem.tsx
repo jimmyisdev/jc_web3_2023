@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { VscTriangleDown, VscTriangleUp } from "react-icons/vsc";
 import { useStateContext } from '@/contexts';
-import { ERC20TOKEN } from '@/interfaces/contracts_interface'
+import { type ERC20TOKEN } from '@/interfaces/contracts_interface'
 import EtherscanLink from '../EtherscanLink/EtherscanLink';
 
 export default function TokenItem({ data }: { data: ERC20TOKEN }) {

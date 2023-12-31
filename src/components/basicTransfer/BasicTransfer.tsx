@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useStateContext } from '@/contexts';
 import Box from '../shared/Box/Box';
 import BoxHeader from '../shared/Box/BoxHeader';
-import { ERC20TOKEN } from '@/interfaces/contracts_interface';
+import { type ERC20TOKEN } from '@/interfaces/contracts_interface';
 import EtherscanLink from '../shared/Display/EtherscanLink/EtherscanLink';
 import Loading from '../shared/Display/Loading/Loading';
 import ErrorMsg from '../shared/Display/ErrorMsg/ErrorMsg';

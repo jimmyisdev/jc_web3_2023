@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
-import { CoinTransaction } from "@/interfaces/scokets_interface"
+import { type CoinTransaction } from "@/interfaces/scokets_interface"
 import { VscTriangleDown, VscTriangleUp } from "react-icons/vsc";
 import Loading from "../shared/Display/Loading/Loading";
 

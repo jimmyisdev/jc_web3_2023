@@ -1,5 +1,5 @@
 "use client"
-import { BinanceSocketData, CoinTransaction, socketsContextValue } from '@/interfaces/scokets_interface';
+import { type BinanceSocketData, CoinTransaction, socketsContextValue } from '@/interfaces/scokets_interface';
 import { Socket } from '@/utils/socket/Socket';
 import React, { createContext, useState } from 'react';
 const SocketsContext = createContext<socketsContextValue | undefined>(undefined);
